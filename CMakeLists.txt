@@ -17,9 +17,11 @@ set(SRCS
     src/main.cpp
     src/window.cpp
     src/game.cpp
+    src/game_rect.cpp
     src/input.cpp
     src/balls.cpp
     src/path.cpp
+    src/shooter.cpp
     src/spline.cpp
     src/render.cpp
 )

@@ -3,6 +3,7 @@
 #include <string>
 
 #include "colors.h"
+#include "game_rect.h"
 #include "window.h"
 
 SDL_Renderer* ptr_renderer = nullptr;
@@ -80,49 +81,18 @@ void render_present()
 //////////////////////////////////////////////
 //////////////////////////////////////////////
 
-SDL_FRect render_frect;
-float ball_w, ball_h;
-
-void adjust_render_rect(int w, int h)
-{
-    if (9 * w > 16 * h) {
-        render_frect.w = 16.0f * h / 9.0f;
-        render_frect.h = h;
-        render_frect.x = (w - render_frect.w) / 2.0f;
-        render_frect.y = 0;
-    }
-    else {
-        render_frect.w = w;
-        render_frect.h = 9.0f * w / 16.0f;
-        render_frect.x = 0.0f;
-        render_frect.y = (h - render_frect.h) / 2.0f;
-    }
-    ball_w = render_frect.w / 32.f;
-    ball_h = render_frect.h / 18.f;
-}
-
 //64x36 field game coordinate system
 //radius=1
 //
 //convert x
-inline
-float cx(float x)
-{
-    return render_frect.x + ball_w * x / 2.f;
-}
-inline
-float cy(float y)
-{
-    return render_frect.y + ball_h * y / 2.f;
-}
 
 void draw_ball(float x, float y, Color color)
 {
     SDL_FRect rect;
-    rect.x = cx(x) - 0.5f*ball_w;
-    rect.y = cy(y) - 0.5f*ball_h;
-    rect.w = ball_w;
-    rect.h = ball_h;
+    rect.x = cx(x) - 0.5f*ball_r;
+    rect.y = cy(y) - 0.5f*ball_r;
+    rect.w = ball_r;
+    rect.h = ball_r;
     SDL_RenderCopyF(ptr_renderer, color_textures[color], nullptr, &rect);
 }
 
@@ -135,6 +105,9 @@ void prepare_scene(const GameState& state)
     SDL_RenderCopyF(ptr_renderer, path_texture, nullptr, &render_frect);
     for (const auto& ball : state.balls) {
         draw_ball(ball.pos.x, ball.pos.y, ball.color);
+    }
+    for (const auto& proj : state.projectiles) {
+        draw_ball(proj.pos.x, proj.pos.y, COLOR_RED);
     }
 }
 

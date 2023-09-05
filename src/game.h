@@ -10,9 +10,18 @@ enum ProjectileType {
     PROJ_MISSILE, PROJ_BALL
 };
 
+struct Projectile {
+    glm::vec2 pos;
+    glm::vec2 vel;
+    ProjectileType type;
+    Color color;
+};
+
 struct GameState {
 
     void update(float delta);
+    void move_projectiles(float delta);
+    void collide();
     
     std::vector<LineSimulation> lines;
     std::vector<Ball> balls;
@@ -20,11 +29,7 @@ struct GameState {
     
     std::vector<Shooter> shooters;
 
-    struct Projectile {
-        glm::vec2 pos;
-        glm::vec2 vel;
-        int type;
-    };
+    std::vector<Projectile> projectiles;
 };
 extern GameState state;
 

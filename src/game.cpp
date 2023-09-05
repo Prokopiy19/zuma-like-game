@@ -17,5 +17,19 @@ void GameState::update(float delta)
                 .color = line_balls[i].color
             });
     }
+    for (auto& shooter : shooters)
+        shooter.update(delta);
+    
+    move_projectiles(delta);
+}
+
+void GameState::move_projectiles(float delta)
+{
+    for (auto& proj : projectiles)
+        proj.pos += proj.vel * delta;
+}
+
+void GameState::collide()
+{
     
 }

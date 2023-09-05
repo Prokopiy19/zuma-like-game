@@ -48,6 +48,9 @@ int main(int argv, char** args)
     auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
     std::default_random_engine e(seed);
     state.lines.emplace_back(500, path, e);
+    Shooter shooter;
+    shooter.pos = glm::vec2(40, 18);
+    state.shooters.push_back(shooter);
 
     draw_test(control, path);
     while (running){
