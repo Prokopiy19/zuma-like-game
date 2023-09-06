@@ -89,10 +89,10 @@ void render_present()
 void draw_ball(float x, float y, Color color)
 {
     SDL_FRect rect;
-    rect.x = cx(x) - 0.5f*ball_r;
-    rect.y = cy(y) - 0.5f*ball_r;
-    rect.w = ball_r;
-    rect.h = ball_r;
+    rect.x = cx(x) - 0.5f*render_ball_r;
+    rect.y = cy(y) - 0.5f*render_ball_r;
+    rect.w = render_ball_r;
+    rect.h = render_ball_r;
     SDL_RenderCopyF(ptr_renderer, color_textures[color], nullptr, &rect);
 }
 

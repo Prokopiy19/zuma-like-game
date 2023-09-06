@@ -5,13 +5,13 @@
 #include <SDL.h>
 
 #include "balls.h"
+#include "debug.h"
 #include "game.h"
 #include "input.h"
 #include "render.h"
 #include "shooter.h"
 #include "spline.h"
 #include "window.h"
-
 
 void close()
 {
@@ -43,7 +43,7 @@ int main(int argv, char** args)
         {30.0f,  0.0f},
     };
     Spline spline(control);
-    Path path(spline, 0.5f * RADIUS);
+    Path path(spline, 0.5f * BALL_RADIUS);
 
     auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
     std::default_random_engine e(seed);
@@ -57,6 +57,9 @@ int main(int argv, char** args)
         handle_events();
         float delta = 1./60.;
         state.update(delta);
+
+        debug_title(window.ptr);
+
         if (!window.minimized)
             prepare_scene(state);
         render_present();

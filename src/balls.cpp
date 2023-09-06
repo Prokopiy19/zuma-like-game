@@ -33,7 +33,7 @@ void LineSimulation::update(float delta)
 
 void LineSimulation::spawn()
 {
-    if (cnt > 0 && (balls.empty() || (balls[0].t - 2 * RADIUS > 0))) {
+    if (cnt > 0 && (balls.empty() || (balls[0].t - 2 * BALL_RADIUS > 0))) {
         Color color = static_cast<Color>(u(*ptr_e));
         if (balls.empty())
             balls.push_front( {
@@ -44,7 +44,7 @@ void LineSimulation::spawn()
         else
             balls.push_front({
                 .ball_id=id,
-                .t=balls[0].t - 2 * RADIUS,
+                .t=balls[0].t - 2 * BALL_RADIUS,
                 .color = color
             });
         --cnt;
@@ -54,11 +54,11 @@ void LineSimulation::spawn()
 void LineSimulation::collide_forward()
 {
     for (int i = 1; i < balls.size(); ++i)
-        balls[i].t = std::max(balls[i].t, balls[i-1].t + 2*RADIUS);
+        balls[i].t = std::max(balls[i].t, balls[i-1].t + 2*BALL_RADIUS);
 }
 
 void LineSimulation::collide_backward()
 {
     for (int i = balls.size()-2; i >= 0; --i)
-        balls[i].t = std::max(balls[i].t, balls[i+1].t - 2*RADIUS);
+        balls[i].t = std::max(balls[i].t, balls[i+1].t - 2*BALL_RADIUS);
 }

@@ -23,7 +23,6 @@ struct GameState {
     void move_projectiles(float delta);
     void collide();
     void projectiles_gone();
-    void delete_projectiles();
     
     std::vector<LineSimulation> lines;
     std::vector<Ball> balls;

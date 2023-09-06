@@ -7,18 +7,18 @@ constexpr float GAME_WIDTH = 64.0f;
 constexpr float GAME_HEIGHT = 36.0f;
 
 extern SDL_FRect render_frect;
-extern float ball_r;
+extern float render_ball_r;
 void adjust_render_rect(int w, int h);
 
 inline
 float cx(float x)
 {
-    return render_frect.x + ball_r * x / 2.f;
+    return render_frect.x + render_ball_r * x / 2.f;
 }
 inline
 float cy(float y)
 {
-    return render_frect.y + ball_r * y / 2.f;
+    return render_frect.y + render_ball_r * y / 2.f;
 }
 
 inline

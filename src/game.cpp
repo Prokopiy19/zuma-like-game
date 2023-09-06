@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <glm/geometric.hpp>
+
 #include "colors.h"
 #include "game_rect.h"
 
@@ -37,7 +39,13 @@ void GameState::move_projectiles(float delta)
 
 void GameState::collide()
 {
-    
+    for (auto& proj : projectiles)
+        if (-BALL_RADIUS < proj.pos.x && proj.pos.x < GAME_WIDTH + BALL_RADIUS &&
+            -BALL_RADIUS < proj.pos.y && proj.pos.y < GAME_HEIGHT + BALL_RADIUS) {
+                for (auto& ball : balls) // test
+                    if (glm::distance(proj.pos, ball.pos) < 2.0f * BALL_RADIUS)
+                        proj.type = PROJ_DEAD;
+            }
 }
 
 void GameState::projectiles_gone()
@@ -49,12 +57,4 @@ void GameState::projectiles_gone()
             proj.pos.y > 2.0f * GAME_HEIGHT)
         proj.type = PROJ_DEAD;
     }
-}
-
-void GameState::delete_projectiles()
-{
-    int j = 0;
-    for (int i = 0; i < projectiles.size(); ++i)
-        if (projectiles[i].type != PROJ_DEAD)
-            projectiles[j++] = projectiles[i];
 }
