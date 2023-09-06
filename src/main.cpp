@@ -5,6 +5,7 @@
 #include <SDL.h>
 
 #include "balls.h"
+#include "cursor.h"
 #include "debug.h"
 #include "game.h"
 #include "input.h"
@@ -15,6 +16,7 @@
 
 void close()
 {
+    cursor_free();
     free_media();
     render_close();
     window_close();
@@ -26,6 +28,11 @@ int main(int argv, char** args)
         close();
         return 0;
     }
+    if (!cursor_init()) {
+        SDL_Log("cursor_init() failed!\n");
+    }
+    
+    set_cursor(COLOR_RED);
     
     //64x36 field game coordinate system
     //radius=1

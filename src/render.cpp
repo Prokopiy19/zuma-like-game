@@ -50,7 +50,7 @@ bool load_media()
 {
     load_texture_from_file(background, "data/back.jpg");
 
-    #define X(a, b) load_texture_from_file(color_textures[a], b);
+    #define X(a, b) load_texture_from_file(color_textures[a], std::string("data/ball_") + b + std::string(".png"));
         X_COLOR_TEXTURES
     #undef X
 

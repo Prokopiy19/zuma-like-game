@@ -14,6 +14,7 @@ find_package(SDL2_image REQUIRED)
 find_package(glm REQUIRED)
 
 set(SRCS
+    src/cursor.cpp
     src/debug.cpp
     src/main.cpp
     src/window.cpp
