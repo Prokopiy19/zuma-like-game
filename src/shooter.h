@@ -7,7 +7,7 @@
 
 struct Shooter {
     glm::vec2 pos;
-    float reload = 0.4f;
+    float reload = 0.8f;
     float reload_progress = 0.0f;
     int charges = 0;
     

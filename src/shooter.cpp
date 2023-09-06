@@ -15,7 +15,7 @@ void Shooter::shoot(glm::vec2 target)
 {
     if (reload_progress >= 0)
         return;
-    constexpr float VEL = 10.0f;
+    constexpr float VEL = 40.0f;
     state.projectiles.push_back({
         .pos = this->pos,
         .vel = glm::normalize(target - this->pos) * VEL,
