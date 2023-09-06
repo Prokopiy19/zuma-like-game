@@ -7,7 +7,7 @@
 #include "shooter.h"
 
 enum ProjectileType {
-    PROJ_MISSILE, PROJ_BALL
+    PROJ_MISSILE, PROJ_BALL, PROJ_DEAD
 };
 
 struct Projectile {
@@ -22,6 +22,8 @@ struct GameState {
     void update(float delta);
     void move_projectiles(float delta);
     void collide();
+    void projectiles_gone();
+    void delete_projectiles();
     
     std::vector<LineSimulation> lines;
     std::vector<Ball> balls;
