@@ -13,5 +13,6 @@ void handle_events()
     while (SDL_PollEvent(&e)) {
         state.shooters[0].handle_events(e);
         handle_window_events(e);
+        state.timer.handle_events(e);
     }
 }

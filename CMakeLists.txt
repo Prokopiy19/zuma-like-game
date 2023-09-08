@@ -24,6 +24,7 @@ set(SRCS
     src/balls.cpp
     src/path.cpp
     src/shooter.cpp
+    src/timer.cpp
     src/spline.cpp
     src/render.cpp
 )

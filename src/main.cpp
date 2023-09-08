@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <chrono>
 #include <random>
 #include <vector>
@@ -60,16 +61,19 @@ int main(int argv, char** args)
     state.shooters.push_back(shooter);
 
     draw_test(control, path);
+    float delta = 0.0f;
     while (running){
+        state.timer.reset();
         handle_events();
-        float delta = 1./60.;
         state.update(delta);
-
-        debug_title(window.ptr);
 
         if (!window.minimized)
             prepare_scene();
         render_present();
+
+        delta = state.timer.watch();
+        delta = std::min(delta, 1.0f / 24.0f);
+        debug_title(window.ptr, delta);
     }
     close();
     return 0;

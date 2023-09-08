@@ -5,14 +5,16 @@
 
 #include "balls.h"
 #include "shooter.h"
+#include "timer.h"
 #include "projectile.h"
 
 struct GameState {
-
     void update(float delta);
     void move_projectiles(float delta);
     void collide();
     void projectiles_gone();
+
+    Timer timer;
     
     std::vector<LineSimulation> lines;
     std::vector<Ball> balls;
