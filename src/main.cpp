@@ -73,7 +73,7 @@ int main(int argv, char** args)
 
         delta = state.timer.watch();
         delta = std::min(delta, 1.0f / 24.0f);
-        debug_title(window.ptr, delta);
+        debug_title(window.ptr);
     }
     close();
     return 0;

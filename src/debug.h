@@ -3,6 +3,6 @@
 
 #include <SDL.h>
 
-void debug_title(SDL_Window* ptr_window, float delta);
+void debug_title(SDL_Window* ptr_window);
 
 #endif//DEBUG_H

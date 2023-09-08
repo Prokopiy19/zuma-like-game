@@ -1,6 +1,6 @@
 #include "timer.h"
 
-float Timer::watch() const
+float Timer::watch() const // return time in seconds
 {
     if (ticking)
         return convert_to_sec(SDL_GetPerformanceCounter() - start);
@@ -36,8 +36,10 @@ void Timer::toggle()
 
 void Timer::reset()
 {
-    ticking = true;
-    start = SDL_GetPerformanceCounter();
+    if (ticking)
+        start = SDL_GetPerformanceCounter();
+    else
+        start = 0;
 }
 
 void Timer::handle_events(SDL_Event& e)
@@ -45,7 +47,5 @@ void Timer::handle_events(SDL_Event& e)
     if (e.type == SDL_KEYDOWN) {
         if (e.key.keysym.sym == SDLK_p)
             toggle();
-        if (e.key.keysym.sym == SDLK_r)
-            reset();
     }
 }

@@ -8,11 +8,13 @@
 
 #include "game.h"
 
-void debug_title(SDL_Window* ptr_window, float delta)
+void debug_title(SDL_Window* ptr_window)
 {
     static int frames = 0;
     static float len = 0.0f;
-    len += delta;
+    static Timer debug_timer;
+    len += debug_timer.watch();
+    debug_timer.reset();
     ++frames;
     if (len < 1.0f)
         return;
