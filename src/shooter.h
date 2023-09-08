@@ -5,6 +5,12 @@
 
 #include "glm/vec2.hpp"
 
+#include "projectile.h"
+
+enum ShooterMode {
+    SHOOTER_BALL, SHOOTER_MISSILE, SHOOTER_TOTAL
+};
+
 struct Shooter {
     glm::vec2 pos;
     float reload = 0.8f;
@@ -12,8 +18,13 @@ struct Shooter {
     int charges = 0;
     
     void update(float delta);
+    void set_mode(ShooterMode mode);
+    ShooterMode get_mode() const { return mode; }
     void shoot(glm::vec2 target);
     void handle_events(SDL_Event& e);
+private:
+    ShooterMode mode = SHOOTER_BALL;
+    void shoot_proj(glm::vec2 target, float vel, ProjectileType proj_type);
 };
 
 #endif//SHOOTER_H

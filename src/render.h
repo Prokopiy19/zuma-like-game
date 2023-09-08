@@ -17,7 +17,7 @@ struct Media {
 bool load_media();
 void free_media();
 void render_present();
-void prepare_scene(const GameState& state);
+void prepare_scene();
 
 ///////////////////////////////////
 

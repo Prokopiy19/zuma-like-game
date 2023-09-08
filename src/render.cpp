@@ -96,7 +96,7 @@ void draw_ball(float x, float y, Color color)
     SDL_RenderCopyF(ptr_renderer, color_textures[color], nullptr, &rect);
 }
 
-void prepare_scene(const GameState& state)
+void prepare_scene()
 {
     adjust_render_rect(window.width, window.height);
     SDL_SetRenderDrawColor(ptr_renderer, 0x00, 0x00, 0x00, 0x00);

@@ -68,7 +68,7 @@ int main(int argv, char** args)
         debug_title(window.ptr);
 
         if (!window.minimized)
-            prepare_scene(state);
+            prepare_scene();
         render_present();
     }
     close();

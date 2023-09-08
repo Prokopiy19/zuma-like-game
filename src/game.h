@@ -5,17 +5,7 @@
 
 #include "balls.h"
 #include "shooter.h"
-
-enum ProjectileType {
-    PROJ_MISSILE, PROJ_BALL, PROJ_DEAD
-};
-
-struct Projectile {
-    glm::vec2 pos;
-    glm::vec2 vel;
-    ProjectileType type;
-    Color color;
-};
+#include "projectile.h"
 
 struct GameState {
 
