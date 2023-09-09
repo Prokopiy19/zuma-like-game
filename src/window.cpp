@@ -80,20 +80,20 @@ void center_screen()
     SDL_SetWindowPosition(window.ptr, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }
 
-void set_min_max_window_size()
+void set_min_max_window_size(SDL_Window* ptr_window)
 {
     SDL_DisplayMode display_mode;
     if (SDL_GetDesktopDisplayMode(window.display, &display_mode) == 0) {
-        SDL_SetWindowMaximumSize(window.ptr, display_mode.w, display_mode.h);
+        SDL_SetWindowMaximumSize(ptr_window, display_mode.w, display_mode.h);
         SDL_SetWindowMinimumSize(
-            window.ptr, 
+            ptr_window, 
             std::min(display_mode.w, 320),
             std::min(display_mode.h, 180)
         );
     }
     else {
         SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
-        SDL_SetWindowMinimumSize(window.ptr, 320, 180);
+        SDL_SetWindowMinimumSize(ptr_window, 320, 180);
     }
 }
 
@@ -116,7 +116,7 @@ bool MakeWindowTransparent(SDL_Window* window, int alpha) {
     }
 
     // Set transparency color
-    return SetLayeredWindowAttributes(hWnd, colorKey, 255, LWA_COLORKEY);
+    return SetLayeredWindowAttributes(hWnd, colorKey, alpha, LWA_COLORKEY);
 #else
     return true;
 #endif
@@ -164,10 +164,9 @@ bool window_init()
         return false;
     }
 
-    set_min_max_window_size();
 
     if (window.transparent) {
-        MakeWindowTransparent(window.ptr, 1);
+        MakeWindowTransparent(window.ptr, 0);
         window.ptr2 = SDL_CreateWindow(
             WINDOW_NAME,
             SDL_WINDOWPOS_CENTERED,
@@ -183,6 +182,8 @@ bool window_init()
     else {
         window.ptr2 = window.ptr;
     }
+    set_min_max_window_size(window.ptr);
+    set_min_max_window_size(window.ptr2);
 
     SDL_Log("window_init success\n");
 
@@ -239,7 +240,8 @@ void handle_window_events(SDL_Event& e)
             }
             case SDL_WINDOWEVENT_DISPLAY_CHANGED: {
                 window.display = e.display.data1;
-                set_min_max_window_size();
+                set_min_max_window_size(window.ptr);
+                set_min_max_window_size(window.ptr2);
                 break;
             }
             case SDL_WINDOWEVENT_CLOSE: {
