@@ -9,9 +9,10 @@
 SDL_Renderer* ptr_renderer = nullptr;
 
 //resources
-SDL_Texture* background = nullptr;
-SDL_Texture* path_texture = nullptr;
-std::array<SDL_Texture*, COLOR_TOTAL> color_textures;
+struct {
+    std::array<SDL_Texture*, COLOR_TOTAL> colors;
+    SDL_Texture* path = nullptr;
+} m;
 
 bool render_init()
 {
@@ -51,9 +52,7 @@ bool load_texture_from_file(SDL_Texture *&ptr_texture, const std::string& path)
 
 bool load_media()
 {
-    load_texture_from_file(background, "data/back.jpg");
-
-    #define X(a, b) load_texture_from_file(color_textures[a], std::string("data/ball_") + b + std::string(".png"));
+    #define X(a, b) load_texture_from_file(m.colors[a], std::string("data/ball_") + b + std::string(".png"));
         X_COLOR_TEXTURES
     #undef X
 
@@ -69,10 +68,9 @@ void free_texture(SDL_Texture* texture)
 void free_media()
 {
     //Free resources
-    free_texture(background);
-    free_texture(path_texture);
+    free_texture(m.path);
     for (int i = 0; i < COLOR_TOTAL; ++i)
-        free_texture(color_textures[i]);
+        free_texture(m.colors[i]);
 }
 
 void render_present()
@@ -96,7 +94,7 @@ void draw_ball(float x, float y, Color color)
     rect.y = cy(y) - 0.5f*render_ball_r;
     rect.w = render_ball_r;
     rect.h = render_ball_r;
-    SDL_RenderCopyF(ptr_renderer, color_textures[color], nullptr, &rect);
+    SDL_RenderCopyF(ptr_renderer, m.colors[color], nullptr, &rect);
 }
 
 void prepare_scene()
@@ -105,7 +103,7 @@ void prepare_scene()
     SDL_SetRenderDrawColor(ptr_renderer, 192, 192, 192, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ptr_renderer);
 
-    SDL_RenderCopyF(ptr_renderer, path_texture, nullptr, &render_frect);
+    SDL_RenderCopyF(ptr_renderer, m.path, nullptr, &render_frect);
     for (const auto& ball : state.balls) {
         draw_ball(ball.pos.x, ball.pos.y, ball.color);
     }
@@ -121,13 +119,13 @@ void draw_circle(float x, float y, float r, Color color)
     rect.y = cy(y) - 0.5*r;
     rect.w = r;
     rect.h = r;
-    SDL_RenderCopyF(ptr_renderer, color_textures[color], nullptr, &rect);
+    SDL_RenderCopyF(ptr_renderer, m.colors[color], nullptr, &rect);
 }
 
 void draw_test(const std::vector<glm::vec2>& control_points, const Path& path)
 {
-    path_texture = SDL_CreateTexture(ptr_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1920, 1080);
-    SDL_SetRenderTarget(ptr_renderer, path_texture);
+    m.path = SDL_CreateTexture(ptr_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1920, 1080);
+    SDL_SetRenderTarget(ptr_renderer, m.path);
     adjust_render_rect(1920, 1080);
     SDL_SetRenderDrawColor(ptr_renderer, 192, 192, 192, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ptr_renderer);
