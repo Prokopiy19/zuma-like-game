@@ -15,7 +15,6 @@ struct Window {
     SDL_Window *ptr, *ptr2;
     bool borderless_fullscreen = false;
     bool minimized = false;
-    bool maximized = false;
     int width = WIDTH;
     int height = HEIGHT;
     int display = 0;
