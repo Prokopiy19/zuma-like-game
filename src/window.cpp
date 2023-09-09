@@ -175,12 +175,12 @@ bool window_init()
             window.height,
             SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SKIP_TASKBAR
         );
-        SDL_SetWindowAlwaysOnTop(window.ptr, SDL_TRUE);
         SDL_SetWindowOpacity(window.ptr2, 0.01f);
         SDL_RaiseWindow(window.ptr2);
     }
     else {
         window.ptr2 = window.ptr;
+        SDL_SetWindowResizable(window.ptr, SDL_TRUE);
     }
     set_min_max_window_size(window.ptr);
     set_min_max_window_size(window.ptr2);
@@ -247,6 +247,15 @@ void handle_window_events(SDL_Event& e)
             case SDL_WINDOWEVENT_CLOSE: {
                 running = false;
                 SDL_Log("Quit\n");
+                break;
+            }
+            case SDL_WINDOWEVENT_FOCUS_GAINED: {
+                auto ptr_window = SDL_GetWindowFromID(e.window.windowID);
+                if (window.transparent) {
+                    if (ptr_window == window.ptr) {
+                        SDL_RaiseWindow(window.ptr2);
+                    }
+                }
                 break;
             }
         }
