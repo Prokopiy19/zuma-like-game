@@ -102,7 +102,7 @@ void draw_ball(float x, float y, Color color)
 void prepare_scene()
 {
     adjust_render_rect(window.width, window.height);
-    SDL_SetRenderDrawColor(ptr_renderer, 128, 128, 128, 0x00);
+    SDL_SetRenderDrawColor(ptr_renderer, 192, 192, 192, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ptr_renderer);
 
     SDL_RenderCopyF(ptr_renderer, path_texture, nullptr, &render_frect);
@@ -129,11 +129,11 @@ void draw_test(const std::vector<glm::vec2>& control_points, const Path& path)
     path_texture = SDL_CreateTexture(ptr_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1920, 1080);
     SDL_SetRenderTarget(ptr_renderer, path_texture);
     adjust_render_rect(1920, 1080);
-    SDL_SetRenderDrawColor(ptr_renderer, 128, 128, 128, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(ptr_renderer, 192, 192, 192, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ptr_renderer);
     // SDL_RenderCopyF(ptr_renderer, background, nullptr, &render_frect);
     for (auto p : path.p) {
-        draw_circle(p.x, p.y, 5.f, COLOR_BLUE);
+        draw_circle(p.x, p.y, 3.f, COLOR_BLUE);
         // SDL_SetRenderDrawColor(ptr_renderer, 0x00, 0x00, 0xFF, 0xFF);
         // SDL_RenderDrawPointF(ptr_renderer, cx(p.x), cy(p.y));
     }

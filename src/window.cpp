@@ -96,13 +96,11 @@ void set_min_max_window_size()
         SDL_SetWindowMinimumSize(window.ptr, 320, 180);
     }
 }
-} // namespace
-
 
 // Makes a window transparent by setting a transparency color.
 bool MakeWindowTransparent(SDL_Window* window, int alpha) {
 #ifdef _WIN32
-    COLORREF colorKey = RGB(128, 128, 128);
+    COLORREF colorKey = RGB(192, 192, 192);
     // Get window handle (https://stackoverflow.com/a/24118145/3357935)
     SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);  // Initialize wmInfo
@@ -123,6 +121,8 @@ bool MakeWindowTransparent(SDL_Window* window, int alpha) {
     return true;
 #endif
 }
+
+} // namespace
 
 bool window_init()
 {
@@ -174,9 +174,11 @@ bool window_init()
             SDL_WINDOWPOS_CENTERED,
             window.width,
             window.height,
-            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SKIP_TASKBAR
         );
+        SDL_SetWindowAlwaysOnTop(window.ptr, SDL_TRUE);
         SDL_SetWindowOpacity(window.ptr2, 0.01f);
+        SDL_RaiseWindow(window.ptr2);
     }
     else {
         window.ptr2 = window.ptr;
@@ -217,6 +219,7 @@ void handle_window_events(SDL_Event& e)
             case SDL_WINDOWEVENT_MINIMIZED: {
                 window.minimized = true;
                 SDL_MinimizeWindow(window.ptr);
+                SDL_MinimizeWindow(window.ptr2);
                 break;
             }
             case SDL_WINDOWEVENT_RESTORED: {
@@ -225,6 +228,7 @@ void handle_window_events(SDL_Event& e)
                     set_borderless_fullscreen(true);
                 }
                 SDL_RestoreWindow(window.ptr);
+                SDL_RestoreWindow(window.ptr2);
                 break;
             }
             case SDL_WINDOWEVENT_MOVED: {
@@ -241,6 +245,7 @@ void handle_window_events(SDL_Event& e)
             case SDL_WINDOWEVENT_CLOSE: {
                 running = false;
                 SDL_Log("Quit\n");
+                break;
             }
         }
     }
