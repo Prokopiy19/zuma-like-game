@@ -23,8 +23,20 @@ void close()
     window_close();
 }
 
+constexpr int FPS_CAP = 121;
+float MAX_DELTA = 1000.0f / FPS_CAP;
+void cap_framerate()
+{
+    static Timer timer;
+    float delta = 1000.0f * timer.watch();
+    SDL_Delay(std::max(MAX_DELTA - delta, 0.0f));
+    timer.reset();
+}
+
 int main(int argv, char** args)
 {
+    if (argv >= 2 && strcpy(args[1], "-t"))
+        window.transparent = true;
     if (!window_init() || !render_init() || !load_media()) {
         close();
         return 0;
@@ -71,9 +83,10 @@ int main(int argv, char** args)
             prepare_scene();
         render_present();
 
+        debug_title(window.ptr);
+        cap_framerate();
         delta = state.timer.watch();
         delta = std::min(delta, 1.0f / 24.0f);
-        debug_title(window.ptr);
     }
     close();
     return 0;

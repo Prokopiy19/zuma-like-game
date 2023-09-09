@@ -15,7 +15,10 @@ std::array<SDL_Texture*, COLOR_TOTAL> color_textures;
 
 bool render_init()
 {
-    ptr_renderer = SDL_CreateRenderer(window.ptr, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    Uint32 flags = SDL_RENDERER_ACCELERATED;
+    if (!window.transparent)
+        flags |= SDL_RENDERER_PRESENTVSYNC;
+    ptr_renderer = SDL_CreateRenderer(window.ptr, -1, flags);
     if (!ptr_renderer) {
         SDL_Log("SDL_CreateRenderer failed: %s\n", SDL_GetError());
         return false;
@@ -99,7 +102,7 @@ void draw_ball(float x, float y, Color color)
 void prepare_scene()
 {
     adjust_render_rect(window.width, window.height);
-    SDL_SetRenderDrawColor(ptr_renderer, 0x00, 0x00, 0x00, 0x00);
+    SDL_SetRenderDrawColor(ptr_renderer, 128, 128, 128, 0x00);
     SDL_RenderClear(ptr_renderer);
 
     SDL_RenderCopyF(ptr_renderer, path_texture, nullptr, &render_frect);

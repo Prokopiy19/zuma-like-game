@@ -7,6 +7,10 @@
 #include <SDL_syswm.h>
 #include <SDL_ttf.h>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif//_WIN32
+
 Window window;
 bool running;
 
@@ -38,23 +42,26 @@ void set_borderless_fullscreen(bool f)
         if (!window.borderless_fullscreen) {
             window.old_width = window.width;
             window.old_height = window.height;            
-            SDL_GetWindowPosition(window.ptr, &window.old_pos_x, &window.old_pos_y);
+            SDL_GetWindowPosition(window.ptr2, &window.old_pos_x, &window.old_pos_y);
             window.borderless_fullscreen = true;
         }
 
         SDL_Rect bounds;
         SDL_GetDisplayBounds(window.display, &bounds);
-        SDL_SetWindowBordered(window.ptr, SDL_FALSE);
-        SDL_SetWindowResizable(window.ptr, SDL_FALSE);
-        SDL_SetWindowSize(window.ptr, bounds.w, bounds.h);
+        SDL_SetWindowBordered(window.ptr2, SDL_FALSE);
+        SDL_SetWindowResizable(window.ptr2, SDL_FALSE);
+        SDL_SetWindowSize(window.ptr2, bounds.w, bounds.h);
         SDL_SetWindowPosition(window.ptr, bounds.x, bounds.y);
+        SDL_SetWindowPosition(window.ptr2, bounds.x, bounds.y);
     }
     else {
         window.borderless_fullscreen = false;
-        SDL_SetWindowBordered(window.ptr, SDL_TRUE);
-        SDL_SetWindowResizable(window.ptr, SDL_TRUE);
-        SDL_SetWindowSize(window.ptr, window.old_width, window.old_height);
+        SDL_SetWindowBordered(window.ptr2, SDL_TRUE);
+        SDL_SetWindowResizable(window.ptr2, SDL_TRUE);
+        SDL_SetWindowSize(window.ptr2, window.old_width, window.old_height);
         SDL_SetWindowPosition(window.ptr, window.old_pos_x, window.old_pos_y);
+        SDL_SetWindowPosition(window.ptr2, window.old_pos_x, window.old_pos_y);
+
     }
 }
 
@@ -91,6 +98,32 @@ void set_min_max_window_size()
 }
 } // namespace
 
+
+// Makes a window transparent by setting a transparency color.
+bool MakeWindowTransparent(SDL_Window* window, int alpha) {
+#ifdef _WIN32
+    COLORREF colorKey = RGB(128, 128, 128);
+    // Get window handle (https://stackoverflow.com/a/24118145/3357935)
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);  // Initialize wmInfo
+    SDL_GetWindowWMInfo(window, &wmInfo);
+    HWND hWnd = wmInfo.info.win.window;
+
+
+    static bool layered = false;
+    // Change window type to layered (https://stackoverflow.com/a/3970218/3357935)
+    if (!layered) {
+        SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
+        layered = true;
+    }
+
+    // Set transparency color
+    return SetLayeredWindowAttributes(hWnd, colorKey, 255, LWA_COLORKEY);
+#else
+    return true;
+#endif
+}
+
 bool window_init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -111,7 +144,7 @@ bool window_init()
         SDL_WINDOWPOS_CENTERED,
         window.width,
         window.height,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL
+        SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
     );
     if (!window.ptr) {
         SDL_Log("SDL_CreateWindow failed: %s\n", SDL_GetError());
@@ -133,7 +166,21 @@ bool window_init()
 
     set_min_max_window_size();
 
-    // MakeWindowTransparent(window.ptr, 1);
+    if (window.transparent) {
+        MakeWindowTransparent(window.ptr, 1);
+        window.ptr2 = SDL_CreateWindow(
+            WINDOW_NAME,
+            SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_CENTERED,
+            window.width,
+            window.height,
+            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+        );
+        SDL_SetWindowOpacity(window.ptr2, 0.01f);
+    }
+    else {
+        window.ptr2 = window.ptr;
+    }
 
     SDL_Log("window_init success\n");
 
@@ -147,6 +194,7 @@ void window_close()
     running = false;
 
     SDL_DestroyWindow(window.ptr);
+    SDL_DestroyWindow(window.ptr2);
     window.ptr = nullptr;
 
     TTF_Quit();
@@ -163,10 +211,12 @@ void handle_window_events(SDL_Event& e)
             case SDL_WINDOWEVENT_SIZE_CHANGED: {
                 window.width = e.window.data1;
                 window.height = e.window.data2;
+                SDL_SetWindowSize(window.ptr, window.width, window.height);
                 break;
             }
             case SDL_WINDOWEVENT_MINIMIZED: {
                 window.minimized = true;
+                SDL_MinimizeWindow(window.ptr);
                 break;
             }
             case SDL_WINDOWEVENT_RESTORED: {
@@ -174,12 +224,23 @@ void handle_window_events(SDL_Event& e)
                 if (window.borderless_fullscreen) {
                     set_borderless_fullscreen(true);
                 }
+                SDL_RestoreWindow(window.ptr);
+                break;
+            }
+            case SDL_WINDOWEVENT_MOVED: {
+                int x, y;
+                SDL_GetWindowPosition(window.ptr2, &x, &y);
+                SDL_SetWindowPosition(window.ptr, x, y);
                 break;
             }
             case SDL_WINDOWEVENT_DISPLAY_CHANGED: {
                 window.display = e.display.data1;
                 set_min_max_window_size();
                 break;
+            }
+            case SDL_WINDOWEVENT_CLOSE: {
+                running = false;
+                SDL_Log("Quit\n");
             }
         }
     }

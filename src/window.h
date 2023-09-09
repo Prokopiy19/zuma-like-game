@@ -12,7 +12,7 @@ extern bool running;
 constexpr int WIDTH = 1280;
 constexpr int HEIGHT = 720;
 struct Window {
-    SDL_Window *ptr;
+    SDL_Window *ptr, *ptr2;
     bool borderless_fullscreen = false;
     bool minimized = false;
     bool maximized = false;
@@ -23,6 +23,7 @@ struct Window {
     int old_height = HEIGHT;
     int old_pos_x = 0;
     int old_pos_y = 0;
+    bool transparent = false;
 };
 extern Window window;
 
