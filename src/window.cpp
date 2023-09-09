@@ -7,10 +7,6 @@
 #include <SDL_syswm.h>
 #include <SDL_ttf.h>
 
-#ifdef _WIN32
-#include <Windows.h>
-#endif//_WIN32
-
 Window window;
 bool running;
 
@@ -94,32 +90,6 @@ void set_min_max_window_size()
     }
 }
 } // namespace
-
-
-// Makes a window transparent by setting a transparency color.
-bool MakeWindowTransparent(SDL_Window* window, int alpha) {
-#ifdef _WIN32
-    COLORREF colorKey = RGB(128, 128, 128);
-    // Get window handle (https://stackoverflow.com/a/24118145/3357935)
-    SDL_SysWMinfo wmInfo;
-    SDL_VERSION(&wmInfo.version);  // Initialize wmInfo
-    SDL_GetWindowWMInfo(window, &wmInfo);
-    HWND hWnd = wmInfo.info.win.window;
-
-
-    static bool layered = false;
-    // Change window type to layered (https://stackoverflow.com/a/3970218/3357935)
-    if (!layered) {
-        SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-        layered = true;
-    }
-
-    // Set transparency color
-    return SetLayeredWindowAttributes(hWnd, colorKey, 255, LWA_COLORKEY);
-#else
-    return true;
-#endif
-}
 
 bool window_init()
 {
