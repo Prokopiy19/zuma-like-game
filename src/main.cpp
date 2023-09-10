@@ -66,8 +66,7 @@ int main(int argv, char** args)
     Path path(spline, 0.5f * BALL_RADIUS);
 
     auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    std::default_random_engine e(seed);
-    state.lines.emplace_back(500, path, e);
+    state.lines.emplace_back(path);
     Shooter shooter;
     shooter.pos = glm::vec2(40, 18);
     state.shooters.push_back(shooter);

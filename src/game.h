@@ -16,12 +16,16 @@ struct GameState {
     void collide(Projectile& proj, Ball& ball);
 
     Timer timer;
+    int cnt = 500; // balls not spawned yet
     
     std::vector<LineSimulation> lines;
     
     std::vector<Shooter> shooters;
 
     std::vector<Projectile> projectiles;
+
+    std::default_random_engine e;
+    std::uniform_int_distribution<> u = std::uniform_int_distribution<>(0, COLOR_TOTAL-1);
 };
 extern GameState state;
 

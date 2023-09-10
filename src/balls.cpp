@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "colors.h"
+#include "game.h"
 
 namespace {
 
@@ -33,8 +34,8 @@ void LineSimulation::update(float delta)
 
 void LineSimulation::spawn()
 {
-    if (cnt > 0 && (balls.empty() || (balls[0].t - 2 * BALL_RADIUS > 0))) {
-        Color color = static_cast<Color>(u(*ptr_e));
+    if (state.cnt > 0 && (balls.empty() || (balls[0].t - 2 * BALL_RADIUS > 0))) {
+        Color color = static_cast<Color>(state.u(state.e));
         if (balls.empty())
             balls.push_back( {
                 .ball_id = id++,
@@ -47,7 +48,7 @@ void LineSimulation::spawn()
                 .t=balls.back().t - 2 * BALL_RADIUS,
                 .color = color
             });
-        --cnt;
+        --state.cnt;
     }
 }
 

@@ -23,7 +23,7 @@ struct Ball {
 
 class LineSimulation {
 public:
-    LineSimulation(int count, Path path, std::default_random_engine &engine) : cnt(count), path(path), ptr_e(&engine) { }
+    LineSimulation(Path path) : path(path) { }
     
     void update(float delta);
     
@@ -39,9 +39,6 @@ private:
     float speed_max = SPEED;
     constexpr static float acceleration = 0.3;
     
-    int cnt;
-    std::default_random_engine* ptr_e;
-    std::uniform_int_distribution<> u = std::uniform_int_distribution<>(0, COLOR_TOTAL-1);
     void collide_forward();
     void collide_backward();
     void spawn();
