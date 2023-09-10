@@ -13,7 +13,6 @@ void GameState::update(float delta)
 {
     for (auto& line : lines) {
         line.update(delta);
-        line.kill.resize(line.balls.size());
     }
     for (auto& shooter : shooters)
         shooter.update(delta);
@@ -38,15 +37,15 @@ void GameState::find_collisions()
         if (-BALL_RADIUS < proj.pos.x && proj.pos.x < GAME_WIDTH + BALL_RADIUS &&
             -BALL_RADIUS < proj.pos.y && proj.pos.y < GAME_HEIGHT + BALL_RADIUS) {
                 for (auto& line : lines)
-                    for (int i = 0; i < line.balls.size(); ++i)
-                        if (glm::distance(proj.pos, line.get_pos(i)) < 2.0f * BALL_RADIUS) {
-                            collide(proj, line, i);
+                    for (auto& ball : line.balls)
+                        if (glm::distance(proj.pos, line.path(ball.t)) < 2.0f * BALL_RADIUS) {
+                            collide(proj, ball);
                             break;
                         }
             }
 }
 
-void GameState::collide(Projectile& proj, LineSimulation& line, int i)
+void GameState::collide(Projectile& proj, Ball& ball)
 {
     switch(proj.type) {
         case PROJ_BALL: {
@@ -55,7 +54,7 @@ void GameState::collide(Projectile& proj, LineSimulation& line, int i)
         }
         case PROJ_MISSILE: {
             proj.type = PROJ_DEAD;
-            line.kill[i] = true;
+            ball.color = COLOR_DEAD;
             break;
         }
         case PROJ_DEAD: {
@@ -79,10 +78,9 @@ void GameState::kill_balls()
 {
     for (auto& line : lines) {
         int j = 0;
-        for (int i = 0; i < line.balls.size(); ++i)
-            if (!line.kill[i])
-                line.balls[j++] = line.balls[i];
+        for (auto& ball : line.balls)
+            if (ball.color != COLOR_DEAD)
+                line.balls[j++] = ball;
         line.balls.resize(j);
-        line.kill.clear();
     }
 }

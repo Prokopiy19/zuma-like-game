@@ -13,7 +13,7 @@ struct GameState {
     void move_projectiles(float delta);
     void find_collisions();
     void projectiles_gone();
-    void collide(Projectile& proj, LineSimulation& line, int i);
+    void collide(Projectile& proj, Ball& ball);
     void kill_balls();
 
     Timer timer;
