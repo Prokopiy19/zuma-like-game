@@ -1,10 +1,7 @@
 #ifndef BALLS_H
 #define BALLS_H
 
-#include <array>
-#include <deque>
 #include <random>
-#include <unordered_map>
 #include <vector>
 
 #include "glm/vec2.hpp"
@@ -32,7 +29,7 @@ public:
     
     glm::vec2 get_pos(int i) const { return path(balls[i].t); }
 
-    std::deque<Ball> balls;
+    std::vector<Ball> balls;
     Path path;
 private:
     constexpr static float SPEED = 2.0;
