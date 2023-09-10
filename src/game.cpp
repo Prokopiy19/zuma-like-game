@@ -11,22 +11,14 @@ GameState state;
 
 void GameState::update(float delta)
 {
-    balls.clear();
     for (auto& line : lines) {
         line.update(delta);
-        auto& line_balls = line.balls;
-        for (int i = 0; i < line_balls.size(); ++i)
-            balls.push_back({
-                .ball_id = line_balls[i].ball_id,
-                .pos = line.get_pos(i),
-                .color = line_balls[i].color
-            });
     }
     for (auto& shooter : shooters)
         shooter.update(delta);
     
     move_projectiles(delta);
-    collide();
+    find_collisions();
     projectiles_gone();
     std::erase_if(projectiles, [](Projectile proj) { return proj.type == PROJ_DEAD; });
 }
@@ -37,15 +29,33 @@ void GameState::move_projectiles(float delta)
         proj.pos += proj.vel * delta;
 }
 
-void GameState::collide()
+void GameState::find_collisions()
 {
     for (auto& proj : projectiles)
         if (-BALL_RADIUS < proj.pos.x && proj.pos.x < GAME_WIDTH + BALL_RADIUS &&
             -BALL_RADIUS < proj.pos.y && proj.pos.y < GAME_HEIGHT + BALL_RADIUS) {
-                for (auto& ball : balls) // test
-                    if (glm::distance(proj.pos, ball.pos) < 2.0f * BALL_RADIUS)
-                        proj.type = PROJ_DEAD;
+                for (auto& line : lines)
+                    for (auto& ball : line.balls) // test
+                        if (glm::distance(proj.pos, line.path(ball.t)) < 2.0f * BALL_RADIUS)
+                            collide(proj, ball);
             }
+}
+
+void GameState::collide(Projectile& proj, Ball& ball)
+{
+    switch(proj.type) {
+        case PROJ_BALL: {
+            proj.type = PROJ_DEAD;
+            break;
+        }
+        case PROJ_MISSILE: {
+            proj.type = PROJ_DEAD;
+            break;
+        }
+        case PROJ_DEAD: {
+            break; // do nothing
+        }
+    }
 }
 
 void GameState::projectiles_gone()

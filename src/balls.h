@@ -18,6 +18,12 @@ using BallID = int;
 
 void reset_balls_ids();
 
+struct Ball {
+    BallID ball_id;
+    float t;
+    Color color;
+};
+
 class LineSimulation {
 public:
     LineSimulation(int count, Path path, std::default_random_engine &engine) : cnt(count), path(path), ptr_e(&engine) { }
@@ -26,14 +32,9 @@ public:
     
     glm::vec2 get_pos(int i) const { return path(balls[i].t); }
 
-    struct LineEntry {
-        BallID ball_id;
-        float t;
-        Color color;
-    };
-    std::deque<LineEntry> balls;
-private:
+    std::deque<Ball> balls;
     Path path;
+private:
     constexpr static float SPEED = 2.0;
     constexpr static float FRONT_SPEED = 1.0;
 
@@ -47,12 +48,6 @@ private:
     void collide_forward();
     void collide_backward();
     void spawn();
-};
-
-struct Ball {
-    BallID ball_id;
-    glm::vec2 pos;
-    Color color;
 };
 
 #endif //BALLS_H

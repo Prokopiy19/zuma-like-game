@@ -104,9 +104,11 @@ void prepare_scene()
     SDL_RenderClear(ptr_renderer);
 
     SDL_RenderCopyF(ptr_renderer, m.path, nullptr, &render_frect);
-    for (const auto& ball : state.balls) {
-        draw_ball(ball.pos.x, ball.pos.y, ball.color);
-    }
+    for (const auto& line : state.lines)
+        for (const auto& ball : line.balls) {
+            auto pos = line.path(ball.t);
+            draw_ball(pos.x, pos.y, ball.color);
+        }
     for (const auto& proj : state.projectiles) {
         draw_ball(proj.pos.x, proj.pos.y, COLOR_RED);
     }

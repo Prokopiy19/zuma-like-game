@@ -11,14 +11,13 @@
 struct GameState {
     void update(float delta);
     void move_projectiles(float delta);
-    void collide();
+    void find_collisions();
     void projectiles_gone();
+    void collide(Projectile& proj, Ball& ball);
 
     Timer timer;
     
     std::vector<LineSimulation> lines;
-    std::vector<Ball> balls;
-    std::vector<BallID> destroyed;
     
     std::vector<Shooter> shooters;
 
