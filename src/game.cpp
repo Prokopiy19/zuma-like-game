@@ -13,6 +13,7 @@ void GameState::update(float delta)
 {
     for (auto& line : lines) {
         line.update(delta);
+        line.kill.resize(line.balls.size());
     }
     for (auto& shooter : shooters)
         shooter.update(delta);
@@ -20,7 +21,9 @@ void GameState::update(float delta)
     move_projectiles(delta);
     find_collisions();
     projectiles_gone();
-    std::erase_if(projectiles, [](Projectile proj) { return proj.type == PROJ_DEAD; });
+    std::erase_if(projectiles, 
+                  [](Projectile proj) { return proj.type == PROJ_DEAD; });
+    kill_balls();
 }
 
 void GameState::move_projectiles(float delta)
@@ -35,13 +38,15 @@ void GameState::find_collisions()
         if (-BALL_RADIUS < proj.pos.x && proj.pos.x < GAME_WIDTH + BALL_RADIUS &&
             -BALL_RADIUS < proj.pos.y && proj.pos.y < GAME_HEIGHT + BALL_RADIUS) {
                 for (auto& line : lines)
-                    for (auto& ball : line.balls) // test
-                        if (glm::distance(proj.pos, line.path(ball.t)) < 2.0f * BALL_RADIUS)
-                            collide(proj, ball);
+                    for (int i = 0; i < line.balls.size(); ++i)
+                        if (glm::distance(proj.pos, line.get_pos(i)) < 2.0f * BALL_RADIUS) {
+                            collide(proj, line, i);
+                            break;
+                        }
             }
 }
 
-void GameState::collide(Projectile& proj, Ball& ball)
+void GameState::collide(Projectile& proj, LineSimulation& line, int i)
 {
     switch(proj.type) {
         case PROJ_BALL: {
@@ -50,6 +55,7 @@ void GameState::collide(Projectile& proj, Ball& ball)
         }
         case PROJ_MISSILE: {
             proj.type = PROJ_DEAD;
+            line.kill[i] = true;
             break;
         }
         case PROJ_DEAD: {
@@ -66,5 +72,17 @@ void GameState::projectiles_gone()
             proj.pos.y < -GAME_HEIGHT || 
             proj.pos.y > 2.0f * GAME_HEIGHT)
         proj.type = PROJ_DEAD;
+    }
+}
+
+void GameState::kill_balls()
+{
+    for (auto& line : lines) {
+        int j = 0;
+        for (int i = 0; i < line.balls.size(); ++i)
+            if (!line.kill[i])
+                line.balls[j++] = line.balls[i];
+        line.balls.resize(j);
+        line.kill.clear();
     }
 }

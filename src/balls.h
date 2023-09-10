@@ -30,6 +30,7 @@ public:
     glm::vec2 get_pos(int i) const { return path(balls[i].t); }
 
     std::vector<Ball> balls;
+    std::vector<bool> kill;
     Path path;
 private:
     constexpr static float SPEED = 2.0;
