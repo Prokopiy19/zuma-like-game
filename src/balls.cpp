@@ -34,20 +34,13 @@ void LineSimulation::update(float delta)
 
 void LineSimulation::spawn()
 {
-    if (state.cnt > 0 && (balls.empty() || (balls[0].t - 2 * BALL_RADIUS > 0))) {
+    if (state.cnt > 0 && (balls.empty() || (balls.back().t - 2 * BALL_RADIUS > 0))) {
         Color color = static_cast<Color>(state.u(state.e));
-        if (balls.empty())
-            balls.push_back( {
-                .ball_id = id++,
-                .t=0,
-                .color = color
-            });
-        else
-            balls.push_back({
-                .ball_id=id,
-                .t=balls.back().t - 2 * BALL_RADIUS,
-                .color = color
-            });
+        balls.push_back( {
+            .ball_id = id++,
+            .t=0,
+            .color = color
+        });
         --state.cnt;
     }
 }
