@@ -17,5 +17,5 @@ void adjust_render_rect(int w, int h)
         render_frect.x = 0.0f;
         render_frect.y = (h - render_frect.h) / 2.0f;
     }
-    render_ball_r = render_frect.w / 32.f;
+    render_ball_r = render_frect.w / 64.f;
 }

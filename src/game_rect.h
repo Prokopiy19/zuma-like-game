@@ -13,23 +13,23 @@ void adjust_render_rect(int w, int h);
 inline
 float cx(float x)
 {
-    return render_frect.x + render_ball_r * x / 2.f;
+    return render_frect.x + render_ball_r * x;
 }
 inline
 float cy(float y)
 {
-    return render_frect.y + render_ball_r * y / 2.f;
+    return render_frect.y + render_ball_r * y;
 }
 
 inline
 float sx(float x)
 {
-    return render_ball_r * x / 2.0f;
+    return render_ball_r * x;
 }
 inline
 float sy(float y)
 {
-    return render_ball_r * y / 2.0f;
+    return render_ball_r * y;
 }
 
 inline
