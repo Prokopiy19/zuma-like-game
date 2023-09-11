@@ -97,6 +97,16 @@ void draw_ball(float x, float y, Color color)
     SDL_RenderCopyF(ptr_renderer, m.colors[color], nullptr, &rect);
 }
 
+void draw_circle(float x, float y, float r, Color color)
+{
+    SDL_FRect rect;
+    rect.x = cx(x) - 0.5*r;
+    rect.y = cy(y) - 0.5*r;
+    rect.w = r;
+    rect.h = r;
+    SDL_RenderCopyF(ptr_renderer, m.colors[color], nullptr, &rect);
+}
+
 void prepare_scene()
 {
     adjust_render_rect(window.width, window.height);
@@ -110,19 +120,11 @@ void prepare_scene()
             draw_ball(pos.x, pos.y, ball.color);
         }
     for (const auto& proj : state.projectiles) {
-        draw_ball(proj.pos.x, proj.pos.y, COLOR_RED);
+        draw_circle(proj.pos.x, proj.pos.y, sx(proj_radius[proj.type]), COLOR_RED);
     }
 }
 
-void draw_circle(float x, float y, float r, Color color)
-{
-    SDL_FRect rect;
-    rect.x = cx(x) - 0.5*r;
-    rect.y = cy(y) - 0.5*r;
-    rect.w = r;
-    rect.h = r;
-    SDL_RenderCopyF(ptr_renderer, m.colors[color], nullptr, &rect);
-}
+
 
 void draw_test(const std::vector<glm::vec2>& control_points, const Path& path)
 {

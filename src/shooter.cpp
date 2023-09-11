@@ -56,7 +56,7 @@ void Shooter::shoot(glm::vec2 target)
             break;
         }
         case SHOOTER_MISSILE: {
-            const float vel = 10.0f;
+            const float vel = 40.0f;
             shoot_proj(target, vel, PROJ_MISSILE);
             break;
         }
@@ -84,6 +84,7 @@ void Shooter::handle_events(SDL_Event& e)
             }
             case SDLK_2: {
                 set_mode(SHOOTER_MISSILE);
+                charges = 999;
                 break;
             }
         

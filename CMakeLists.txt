@@ -23,6 +23,7 @@ set(SRCS
     src/input.cpp
     src/balls.cpp
     src/path.cpp
+    src/projectile.cpp
     src/shooter.cpp
     src/timer.cpp
     src/spline.cpp

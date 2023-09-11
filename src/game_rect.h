@@ -22,6 +22,17 @@ float cy(float y)
 }
 
 inline
+float sx(float x)
+{
+    return render_ball_r * x;
+}
+inline
+float sy(float y)
+{
+    return render_ball_r * y;
+}
+
+inline
 float xx(float x)
 {
     return (x - render_frect.x) * GAME_WIDTH / render_frect.w;

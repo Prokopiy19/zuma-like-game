@@ -38,7 +38,7 @@ void GameState::find_collisions()
             -BALL_RADIUS < proj.pos.y && proj.pos.y < GAME_HEIGHT + BALL_RADIUS) {
                 for (auto& line : lines)
                     for (auto& ball : line.balls)
-                        if (glm::distance(proj.pos, line.path(ball.t)) < 2.0f * BALL_RADIUS) {
+                        if (glm::distance(proj.pos, line.path(ball.t)) < proj_radius[proj.type] + BALL_RADIUS) {
                             collide(proj, ball);
                             break;
                         }
