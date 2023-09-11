@@ -39,7 +39,7 @@ void Shooter::shoot_proj(glm::vec2 target, float vel, ProjectileType proj_type)
         .pos = this->pos,
         .vel = glm::normalize(target - this->pos) * vel,
         .type = proj_type,
-        .color = COLOR_NONE
+        .color = COLOR_NONE,
     });
 }
 
