@@ -57,7 +57,7 @@ void GameState::collide(Projectile& proj, Ball& ball)
             ball.color = COLOR_DEAD;
             break;
         }
-        case PROJ_DEAD: {
+        case PROJ_DEAD: case PROJ_TOTAL: {
             break; // do nothing
         }
     }
