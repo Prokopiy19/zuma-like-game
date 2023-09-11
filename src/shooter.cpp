@@ -51,12 +51,12 @@ void Shooter::shoot(glm::vec2 target)
  
     switch (mode) {
         case SHOOTER_BALL: {
-            const float vel = 40.0f;
+            const float vel = 60.0f;
             shoot_proj(target, vel, PROJ_BALL);
             break;
         }
         case SHOOTER_MISSILE: {
-            const float vel = 40.0f;
+            const float vel = 60.0f;
             shoot_proj(target, vel, PROJ_MISSILE);
             break;
         }
