@@ -100,10 +100,10 @@ void draw_ball(float x, float y, Color color)
 void draw_circle(float x, float y, float r, Color color)
 {
     SDL_FRect rect;
-    rect.x = cx(x) - 0.5*r;
-    rect.y = cy(y) - 0.5*r;
-    rect.w = r;
-    rect.h = r;
+    rect.x = cx(x) - r;
+    rect.y = cy(y) - r;
+    rect.w = 2.0f * r;
+    rect.h = 2.0f * r;
     SDL_RenderCopyF(ptr_renderer, m.colors[color], nullptr, &rect);
 }
 
@@ -135,11 +135,11 @@ void draw_test(const std::vector<glm::vec2>& control_points, const Path& path)
     SDL_RenderClear(ptr_renderer);
     // SDL_RenderCopyF(ptr_renderer, background, nullptr, &render_frect);
     for (auto p : path.p) {
-        draw_circle(p.x, p.y, 3.f, COLOR_BLUE);
+        draw_circle(p.x, p.y, 1.5f, COLOR_BLUE);
         // SDL_SetRenderDrawColor(ptr_renderer, 0x00, 0x00, 0xFF, 0xFF);
         // SDL_RenderDrawPointF(ptr_renderer, cx(p.x), cy(p.y));
     }
     for (auto p : control_points)
-        draw_circle(p.x, p.y, 5.f, COLOR_RED);
+        draw_circle(p.x, p.y, 3.0f, COLOR_RED);
     SDL_SetRenderTarget(ptr_renderer, nullptr);
 }

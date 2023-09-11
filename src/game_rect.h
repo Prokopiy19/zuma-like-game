@@ -24,12 +24,12 @@ float cy(float y)
 inline
 float sx(float x)
 {
-    return render_ball_r * x;
+    return render_ball_r * x / 2.0f;
 }
 inline
 float sy(float y)
 {
-    return render_ball_r * y;
+    return render_ball_r * y / 2.0f;
 }
 
 inline
