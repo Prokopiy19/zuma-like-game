@@ -11,7 +11,7 @@ Path::Path(std::function<glm::vec2(float)> f, float grid_h) : h(grid_h)
     constexpr float STEP = 0.1f;
 
     p.push_back(f(0.));
-    float t = 0.f;
+    float t = 0.0f;
     while (true) {
         float l = t, r = t;
         while (glm::distance(f(t), f(r)) < h) {
@@ -26,7 +26,7 @@ Path::Path(std::function<glm::vec2(float)> f, float grid_h) : h(grid_h)
             else
                 r = m;
         }
-        if (distance(f(t), f(r)) < 2.f * h) {
+        if (distance(f(t), f(r)) < 2.0f * h) {
             t = r;
             p.push_back(f(t));
         }
@@ -41,7 +41,7 @@ Path::Path(std::function<glm::vec2(float)> f, float grid_h) : h(grid_h)
 glm::vec2 Path::operator()(float t) const
 {
     float x = t / h;
-    x = std::max(x, 0.f);
+    x = std::max(x, 0.0f);
     int i = static_cast<int>(x);
     float r = x - i;
     if (i >= p.size() - 1)
