@@ -39,7 +39,7 @@ void LineSimulation::spawn()
         balls.push_back( {
             .ball_id = id++,
             .t=0,
-            .color = color
+            .color = color,
         });
         --state.cnt;
     }
