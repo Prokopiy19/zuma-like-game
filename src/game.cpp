@@ -98,12 +98,15 @@ void GameState::kill_balls()
                 line.ids[j] = line.ids[i];
                 line.colors[j] = line.colors[i];
                 line.ts[j] = line.ts[i];
+                line.seg[j] = line.seg[i];
                 line.pos[j] = line.pos[i];
                 ++j;
             }
         line.ids.resize(j);
         line.colors.resize(j);
         line.ts.resize(j);
+        line.seg.resize(j);
+        line.pos.resize(j);
         line.alive.clear();
     }
 }

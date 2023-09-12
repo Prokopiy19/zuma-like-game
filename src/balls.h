@@ -6,6 +6,7 @@
 
 #include "glm/vec2.hpp"
 
+#include "segment.h"
 #include "colors.h"
 #include "path.h"
 
@@ -23,12 +24,17 @@ public:
     
     glm::vec2 get_pos(int i) const { return path(ts[i]); }
 
+    // SOA
     std::vector<BallID> ids;
     std::vector<float> ts;
     std::vector<Color> colors;
     std::vector<glm::vec2> pos;
     std::vector<bool> alive;
+    std::vector<SEG_ID> seg;
+    // SOA
 
+
+    void divide_segments();
     Path path;
 private:
     constexpr static float SPEED = 2.0;
@@ -38,9 +44,18 @@ private:
     float speed_max = SPEED;
     constexpr static float acceleration = 0.3;
     
-    void collide_forward();
-    void collide_backward();
+    void collide();
     void spawn();
+
+    std::vector<Segment> segments;
+    std::vector<int> cnt_segments;
+    SEG_ID max_seg_id = 0;
+    Segment& get_seg(SEG_ID id);
+    void remove_seg(SEG_ID id);
+    SEG_ID new_seg();
+    void replace_seg(int i, SEG_ID id);
+    void move_segments(float delta);
+    void remove_unused_segments();
 };
 
 #endif //BALLS_H
