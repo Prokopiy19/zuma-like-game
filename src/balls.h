@@ -15,21 +15,20 @@ using BallID = int;
 
 void reset_balls_ids();
 
-struct Ball {
-    BallID ball_id;
-    float t;
-    Color color;
-};
-
 class LineSimulation {
 public:
     LineSimulation(Path path) : path(path) { }
     
     void update(float delta);
     
-    glm::vec2 get_pos(int i) const { return path(balls[i].t); }
+    glm::vec2 get_pos(int i) const { return path(ts[i]); }
 
-    std::vector<Ball> balls;
+    std::vector<BallID> ids;
+    std::vector<float> ts;
+    std::vector<Color> colors;
+    std::vector<glm::vec2> pos;
+    std::vector<bool> alive;
+
     Path path;
 private:
     constexpr static float SPEED = 2.0;

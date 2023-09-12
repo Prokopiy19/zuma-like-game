@@ -9,14 +9,16 @@
 
 GameState state;
 
-void GameState::update(float delta)
+void GameState::update(const float delta)
 {
     for (auto& line : lines) {
         line.update(delta);
+        line.alive.assign(line.ids.size(), true);
     }
     for (auto& shooter : shooters)
         shooter.update(delta);
     
+    calc_pos();
     move_projectiles(delta);
     find_collisions();
     projectiles_gone();
@@ -25,7 +27,17 @@ void GameState::update(float delta)
     kill_balls();
 }
 
-void GameState::move_projectiles(float delta)
+void GameState::calc_pos()
+{
+    for (auto& line : lines) {
+        const int size = line.ids.size();
+        line.pos.resize(size);
+        for (int i = 0; i < size; ++i)
+            line.pos[i] = line.path(line.ts[i]);
+    }
+}
+
+void GameState::move_projectiles(const float delta)
 {
     for (auto& proj : projectiles)
         proj.pos += proj.vel * delta;
@@ -33,19 +45,21 @@ void GameState::move_projectiles(float delta)
 
 void GameState::find_collisions()
 {
-    for (auto& proj : projectiles)
-        if (-BALL_RADIUS < proj.pos.x && proj.pos.x < GAME_WIDTH + BALL_RADIUS &&
-            -BALL_RADIUS < proj.pos.y && proj.pos.y < GAME_HEIGHT + BALL_RADIUS) {
-                for (auto& line : lines)
-                    for (auto& ball : line.balls)
-                        if (glm::distance(proj.pos, line.path(ball.t)) < proj_radius[proj.type] + BALL_RADIUS) {
-                            collide(proj, ball);
-                            break;
-                        }
+    for (auto& proj : projectiles) {
+        const auto pos = proj.pos;
+        if (-2.0f * BALL_RADIUS < pos.x && pos.x < GAME_WIDTH + 2.0f * BALL_RADIUS &&
+            -2.0f * BALL_RADIUS < pos.y && pos.y < GAME_HEIGHT + 2.0f * BALL_RADIUS) {
+                for (auto& line : lines) {
+                    const int size = line.pos.size();
+                    for (int i = 0; i < size; ++i)
+                        if (glm::distance(pos, line.pos[i]) < proj_radius[proj.type] + BALL_RADIUS)
+                            collide(proj, line, i);
+                }
             }
+    }
 }
 
-void GameState::collide(Projectile& proj, Ball& ball)
+void GameState::collide(Projectile& proj, LineSimulation& line, const int i)
 {
     switch(proj.type) {
         case PROJ_BALL: {
@@ -54,7 +68,7 @@ void GameState::collide(Projectile& proj, Ball& ball)
         }
         case PROJ_MISSILE: {
             proj.type = PROJ_DEAD;
-            ball.color = COLOR_DEAD;
+            line.alive[i] = false;
             break;
         }
         case PROJ_DEAD: case PROJ_TOTAL: {
@@ -78,9 +92,18 @@ void GameState::kill_balls()
 {
     for (auto& line : lines) {
         int j = 0;
-        for (auto& ball : line.balls)
-            if (ball.color != COLOR_DEAD)
-                line.balls[j++] = ball;
-        line.balls.resize(j);
+        const int size = line.alive.size();
+        for(int i = 0; i < size; ++i)
+            if (line.alive[i]) {
+                line.ids[j] = line.ids[i];
+                line.colors[j] = line.colors[i];
+                line.ts[j] = line.ts[i];
+                line.pos[j] = line.pos[i];
+                ++j;
+            }
+        line.ids.resize(j);
+        line.colors.resize(j);
+        line.ts.resize(j);
+        line.alive.clear();
     }
 }

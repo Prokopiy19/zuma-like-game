@@ -13,7 +13,7 @@ enum Color {
     #define X(a, b) a,
         X_COLOR_TEXTURES
     #undef X
-    COLOR_TOTAL, COLOR_NONE, COLOR_DEAD
+    COLOR_TOTAL, COLOR_NONE
 };
 
 #endif // COLORS_H

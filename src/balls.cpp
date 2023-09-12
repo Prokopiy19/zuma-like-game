@@ -20,11 +20,11 @@ void LineSimulation::update(float delta)
 {
     spawn();
 
-    if (balls.empty())
+    if (ids.empty())
         return;
 
     speed += 0.5 * acceleration * delta;
-    balls.back().t += speed * delta;
+    ts.back() += speed * delta;
     speed += 0.5 * acceleration * delta;
 
     speed = std::min(speed, speed_max);
@@ -34,25 +34,27 @@ void LineSimulation::update(float delta)
 
 void LineSimulation::spawn()
 {
-    if (state.cnt > 0 && (balls.empty() || (balls.back().t - 2 * BALL_RADIUS > 0))) {
+    if (state.cnt > 0 && (ts.empty() || (ts.back() > BALL_RADIUS))) {
         Color color = static_cast<Color>(state.u(state.e));
-        balls.push_back( {
-            .ball_id = id++,
-            .t=0,
-            .color = color,
-        });
+        ids.push_back(id++);
+        colors.push_back(color);
+        if (ts.empty() || ts.back() > 2.0f * BALL_RADIUS)
+            ts.push_back(0);
+        else
+            ts.push_back(ts.back() - 2.0f * BALL_RADIUS);
         --state.cnt;
     }
 }
 
 void LineSimulation::collide_forward()
 {
-    for (int i = balls.size()-2; i >= 0; --i)
-        balls[i].t = std::max(balls[i].t, balls[i+1].t + 2*BALL_RADIUS);
+    for (int i = ts.size()-2; i >= 0; --i)
+        ts[i] = std::max(ts[i], ts[i+1] + 2.0f * BALL_RADIUS);
 }
 
 void LineSimulation::collide_backward()
 {
-    for (int i = 1; i < balls.size(); ++i)
-        balls[i].t = std::min(balls[i].t, balls[i-1].t - 2*BALL_RADIUS);
+    const int size = ts.size();
+    for (int i = 1; i < size; ++i)
+        ts[i] = std::min(ts[i], ts[i-1] - 2.0f * BALL_RADIUS);
 }

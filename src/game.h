@@ -10,10 +10,11 @@
 
 struct GameState {
     void update(float delta);
+    void calc_pos();
     void move_projectiles(float delta);
     void find_collisions();
     void projectiles_gone();
-    void collide(Projectile& proj, Ball& ball);
+    void collide(Projectile& proj, LineSimulation& line, int ball_id);
     void kill_balls();
 
     Timer timer;

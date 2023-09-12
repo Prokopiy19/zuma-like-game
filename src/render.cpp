@@ -114,11 +114,12 @@ void prepare_scene()
     SDL_RenderClear(ptr_renderer);
 
     SDL_RenderCopyF(ptr_renderer, m.path, nullptr, &render_frect);
-    for (const auto& line : state.lines)
-        for (const auto& ball : line.balls) {
-            auto pos = line.path(ball.t);
-            draw_ball(pos.x, pos.y, ball.color);
+    for (const auto& line : state.lines) {
+        const int size = line.pos.size();
+        for (int i = 0; i < size; ++i) {
+            draw_ball(line.pos[i].x, line.pos[i].y, line.colors[i]);
         }
+    }
     for (const auto& proj : state.projectiles) {
         draw_circle(proj.pos.x, proj.pos.y, sx(proj_radius[proj.type]), COLOR_RED);
     }
