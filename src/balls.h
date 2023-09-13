@@ -10,7 +10,7 @@
 #include "colors.h"
 #include "path.h"
 
-constexpr float BALL_RADIUS = 1.0;
+constexpr float BALL_RADIUS = 1.0f;
 
 using BallID = int;
 
