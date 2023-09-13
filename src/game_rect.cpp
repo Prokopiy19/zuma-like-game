@@ -1,4 +1,5 @@
 #include "game_rect.h"
+#include "balls.h"
 
 SDL_FRect render_frect;
 float render_ball_r;
@@ -17,5 +18,5 @@ void adjust_render_rect(int w, int h)
         render_frect.x = 0.0f;
         render_frect.y = (h - render_frect.h) / 2.0f;
     }
-    render_ball_r = render_frect.w / 64.0f;
+    render_ball_r = render_frect.w / 64.0f * BALL_RADIUS;
 }
