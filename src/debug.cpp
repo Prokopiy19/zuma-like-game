@@ -20,7 +20,9 @@ void debug_title(SDL_Window* ptr_window)
         return;
     else {
         std::ostringstream record;
-        record << "fps=" << std::to_string(frames / len);
+        record << std::fixed;
+        record.precision(1);
+        record << "fps=" << frames / len;
         SDL_SetWindowTitle(ptr_window, record.str().c_str());
         len = 0.0f;
         frames = 0;
