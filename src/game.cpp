@@ -13,12 +13,10 @@ void GameState::update(const float delta)
 {
     for (auto& line : lines) {
         line.update(delta);
-        line.alive.assign(line.ids.size(), true);
     }
     for (auto& shooter : shooters)
         shooter.update(delta);
     
-    calc_pos();
     move_projectiles(delta);
     find_collisions();
     projectiles_gone();
@@ -26,16 +24,6 @@ void GameState::update(const float delta)
                   [](Projectile proj) { return proj.type == PROJ_DEAD; });
     for (auto& line : lines) {
         line.kill_balls();
-    }
-}
-
-void GameState::calc_pos()
-{
-    for (auto& line : lines) {
-        const int size = line.ids.size();
-        line.pos.resize(size);
-        for (int i = 0; i < size; ++i)
-            line.pos[i] = line.path(line.ts[i]);
     }
 }
 

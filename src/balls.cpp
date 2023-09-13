@@ -32,8 +32,17 @@ void LineSimulation::update(const float delta)
     move_segments(delta);
     first.vel += 0.5 * acceleration * delta;
     first.vel = std::min(first.vel, speed_max);
-
+    calc_pos();
     collide();
+    kill_balls();
+}
+
+void LineSimulation::calc_pos()
+{
+    const int size = ids.size();
+    pos.resize(size);
+    for (int i = 0; i < size; ++i)
+        pos[i] = path(ts[i]);
 }
 
 void LineSimulation::spawn()
@@ -41,6 +50,7 @@ void LineSimulation::spawn()
     if (state.cnt > 0 && (ts.empty() || (ts.back() > BALL_RADIUS))) {
         Color color = static_cast<Color>(state.u(state.e));
         ids.push_back(id++);
+        alive.push_back(true);
         colors.push_back(color);
         if (ts.empty() || ts.back() > 2.0f * BALL_RADIUS) {
             ts.push_back(0);
@@ -59,6 +69,14 @@ void LineSimulation::collide()
 {
     for (int i = seg.size()-2; i >= 0; --i)
         if (seg[i] != seg[i+1] && std::fabs(ts[i] - ts[i+1]) < 2.0f * BALL_RADIUS) {
+            if (colors[i] == colors[i+1]) {
+                int cnt = match_colors(i, -1, false) + match_colors(i+1, 1, false);
+                if (cnt >= 3) {
+                    match_colors(i, -1, true);
+                    match_colors(i+1, 1, true);
+                    continue;
+                }
+            }
             remove_seg(seg[i]);
             replace_seg(i, seg[i+1]);
         }
@@ -141,6 +159,7 @@ void LineSimulation::kill_balls()
     seg.resize(j);
     pos.resize(j);
     alive.clear();
+    alive.assign(j, true);
 }
 
 void LineSimulation::remove_unused_segments()
@@ -157,4 +176,20 @@ void LineSimulation::remove_unused_segments()
             segments[j++] = segments[i];
     segments.resize(j);
     cnt_segments.clear();
+}
+
+int LineSimulation::match_colors(const int i, int step, bool destroy)
+{
+    int cnt = 0;
+    const int size = colors.size();
+    step = std::min(step, 1);
+    step = std::max(step, -1);
+    for (int j = i; 0 <= j && j < size; j += step)
+        if (seg[j] == seg[i] && colors[j] == colors[i]) {
+            ++cnt;
+            alive[j] = !destroy;
+        }
+        else
+            break;
+    return cnt;
 }

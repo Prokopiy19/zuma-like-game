@@ -10,7 +10,6 @@
 
 struct GameState {
     void update(float delta);
-    void calc_pos();
     void move_projectiles(float delta);
     void find_collisions();
     void projectiles_gone();
