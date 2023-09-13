@@ -16,6 +16,7 @@ struct {
 
 bool render_init()
 {
+    render_close();
     Uint32 flags = SDL_RENDERER_ACCELERATED;
     if (!window.transparent)
         flags |= SDL_RENDERER_PRESENTVSYNC;
@@ -24,12 +25,16 @@ bool render_init()
         SDL_Log("SDL_CreateRenderer failed: %s\n", SDL_GetError());
         return false;
     }
-    return true;
+    return load_media();
 }
 
 void render_close()
 {
-    SDL_DestroyRenderer(ptr_renderer);
+    if (ptr_renderer) {
+        free_media();
+        SDL_DestroyRenderer(ptr_renderer);
+        ptr_renderer = nullptr;
+    }
 }
 
 bool load_texture_from_file(SDL_Texture *&ptr_texture, const std::string& path)
@@ -61,8 +66,10 @@ bool load_media()
 
 void free_texture(SDL_Texture* texture)
 {
-    if (texture)
+    if (texture) {
         SDL_DestroyTexture(texture);
+        texture = nullptr;
+    }
 }
 
 void free_media()
@@ -125,20 +132,15 @@ void prepare_scene()
     }
 }
 
-
-
-void draw_test(const std::vector<glm::vec2>& control_points, const Path& path)
+void draw_path(const std::vector<glm::vec2>& control_points, const Path& path)
 {
     m.path = SDL_CreateTexture(ptr_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1920, 1080);
     SDL_SetRenderTarget(ptr_renderer, m.path);
     adjust_render_rect(1920, 1080);
     SDL_SetRenderDrawColor(ptr_renderer, 192, 192, 192, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ptr_renderer);
-    // SDL_RenderCopyF(ptr_renderer, background, nullptr, &render_frect);
     for (auto p : path.p) {
         draw_circle(p.x, p.y, 1.5f, COLOR_BLUE);
-        // SDL_SetRenderDrawColor(ptr_renderer, 0x00, 0x00, 0xFF, 0xFF);
-        // SDL_RenderDrawPointF(ptr_renderer, cx(p.x), cy(p.y));
     }
     for (auto p : control_points)
         draw_circle(p.x, p.y, 3.0f, COLOR_RED);

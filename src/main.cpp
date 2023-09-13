@@ -35,9 +35,7 @@ void cap_framerate()
 
 int main(int argv, char** args)
 {
-    if (argv >= 2 && strcpy(args[1], "-t"))
-        window.transparent = true;
-    if (!window_init() || !render_init() || !load_media()) {
+    if (!window_init() || !render_init()) {
         close();
         return 0;
     }
@@ -71,7 +69,7 @@ int main(int argv, char** args)
     shooter.pos = glm::vec2(40, 18);
     state.shooters.push_back(shooter);
 
-    draw_test(control, path);
+    draw_path(control, path);
     float delta = 0.0f;
     while (running){
         state.timer.reset();

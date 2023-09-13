@@ -16,6 +16,6 @@ void prepare_scene();
 
 ///////////////////////////////////
 
-void draw_test(const std::vector<glm::vec2>& control_points, const Path& path);
+void draw_path(const std::vector<glm::vec2>& control_points, const Path& path);
 
 #endif//RENDER_H

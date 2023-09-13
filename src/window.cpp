@@ -7,6 +7,8 @@
 #include <SDL_syswm.h>
 #include <SDL_ttf.h>
 
+#include "render.h"
+
 #ifdef _WIN32
 #include <Windows.h>
 #endif//_WIN32
@@ -107,18 +109,27 @@ bool MakeWindowTransparent(SDL_Window* window, int alpha) {
     SDL_GetWindowWMInfo(window, &wmInfo);
     HWND hWnd = wmInfo.info.win.window;
 
-
-    static bool layered = false;
     // Change window type to layered (https://stackoverflow.com/a/3970218/3357935)
-    if (!layered) {
-        SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
-        layered = true;
-    }
+    SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
 
     // Set transparency color
     return SetLayeredWindowAttributes(hWnd, colorKey, alpha, LWA_COLORKEY);
 #else
     return true;
+#endif
+}
+
+void make_window_non_transparent(SDL_Window* window, int alpha) {
+#ifdef _WIN32
+    COLORREF colorKey = RGB(192, 192, 192);
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);  // Initialize wmInfo
+    SDL_GetWindowWMInfo(window, &wmInfo);
+    HWND hWnd = wmInfo.info.win.window;
+
+    SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) & ~WS_EX_LAYERED & ~WS_EX_TRANSPARENT);
+#else
+    return;
 #endif
 }
 
@@ -164,32 +175,46 @@ bool window_init()
         return false;
     }
 
-
-    if (window.transparent) {
-        MakeWindowTransparent(window.ptr, 0);
-        window.ptr2 = SDL_CreateWindow(
-            WINDOW_NAME,
-            SDL_WINDOWPOS_CENTERED,
-            SDL_WINDOWPOS_CENTERED,
-            window.width,
-            window.height,
-            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SKIP_TASKBAR
-        );
-        SDL_SetWindowOpacity(window.ptr2, 0.01f);
-        SDL_RaiseWindow(window.ptr2);
-    }
-    else {
-        window.ptr2 = window.ptr;
-        SDL_SetWindowResizable(window.ptr, SDL_TRUE);
-    }
+    window.ptr2 = window.ptr;
+    SDL_SetWindowResizable(window.ptr, SDL_TRUE);
     set_min_max_window_size(window.ptr);
-    set_min_max_window_size(window.ptr2);
 
     SDL_Log("window_init success\n");
 
     running = true;
 
     return true;
+}
+
+void toggle_window_transparent()
+{
+    window.transparent = !window.transparent;
+    if (window.transparent) {
+        MakeWindowTransparent(window.ptr, 0);
+        int x, y;
+        SDL_GetWindowPosition(window.ptr, &x, &y);
+        window.ptr2 = SDL_CreateWindow(
+            WINDOW_NAME,
+            x,
+            y,
+            window.width,
+            window.height,
+            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SKIP_TASKBAR
+        );
+        SDL_SetWindowOpacity(window.ptr2, 0.01f);
+        SDL_RaiseWindow(window.ptr2);
+        set_min_max_window_size(window.ptr2);
+        render_init();
+        draw_path(std::vector<glm::vec2>(), state.lines[0].path);
+    }
+    else {
+        SDL_SetWindowOpacity(window.ptr, 1.0f);
+        SDL_RaiseWindow(window.ptr);
+        SDL_DestroyWindow(window.ptr2);
+        window.ptr2 = window.ptr;
+        render_init();
+        draw_path(std::vector<glm::vec2>(), state.lines[0].path);
+    }
 }
 
 void window_close()
@@ -276,11 +301,7 @@ void handle_window_events(SDL_Event& e)
                 break;
             }
             case SDLK_t: {
-                SDL_SetWindowOpacity(window.ptr, 0.5f);
-                break;
-            }
-            case SDLK_o: {
-                SDL_SetWindowOpacity(window.ptr, 1.0f);
+                toggle_window_transparent();
                 break;
             }
         }
