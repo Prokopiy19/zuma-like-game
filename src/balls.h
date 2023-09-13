@@ -37,6 +37,7 @@ public:
     void kill_balls();
     void divide_segments();
     Path path;
+    std::vector<Segment> segments;
 private:
     constexpr static float SPEED = 2.0;
     constexpr static float FRONT_SPEED = 1.0;
@@ -48,7 +49,6 @@ private:
     void collide();
     void spawn();
 
-    std::vector<Segment> segments;
     std::vector<int> cnt_segments;
     SEG_ID max_seg_id = 0;
     Segment& get_seg(SEG_ID id);

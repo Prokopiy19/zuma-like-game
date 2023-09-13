@@ -16,15 +16,27 @@ void debug_title(SDL_Window* ptr_window)
     len += debug_timer.watch();
     debug_timer.reset();
     ++frames;
-    if (len < 1.0f)
-        return;
-    else {
+
+    static int prev_seg = 0;
+    int cnt_seg = 0;
+    for (const auto& line : state.lines)
+        cnt_seg += line.segments.size();
+
+    static float fps = 0.0f;
+    bool fps_change = false;
+    if (len >= 1.0f) {
+        fps = frames / len;
+        fps_change = true;
+        len = 0;
+        frames = 0;
+    } 
+    if (cnt_seg != prev_seg || fps_change) {
         std::ostringstream record;
+        record << "segments: " << cnt_seg << ". ";
         record << std::fixed;
         record.precision(1);
-        record << "fps=" << frames / len;
+        record << "fps=" << fps;
         SDL_SetWindowTitle(ptr_window, record.str().c_str());
-        len = 0.0f;
-        frames = 0;
     }
+    prev_seg = cnt_seg;
 }
