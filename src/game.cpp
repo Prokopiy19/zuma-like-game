@@ -24,7 +24,9 @@ void GameState::update(const float delta)
     projectiles_gone();
     std::erase_if(projectiles, 
                   [](Projectile proj) { return proj.type == PROJ_DEAD; });
-    kill_balls();
+    for (auto& line : lines) {
+        line.kill_balls();
+    }
 }
 
 void GameState::calc_pos()
@@ -85,28 +87,5 @@ void GameState::projectiles_gone()
             proj.pos.y < -GAME_HEIGHT || 
             proj.pos.y > 2.0f * GAME_HEIGHT)
         proj.type = PROJ_DEAD;
-    }
-}
-
-void GameState::kill_balls()
-{
-    for (auto& line : lines) {
-        int j = 0;
-        const int size = line.alive.size();
-        for(int i = 0; i < size; ++i)
-            if (line.alive[i]) {
-                line.ids[j] = line.ids[i];
-                line.colors[j] = line.colors[i];
-                line.ts[j] = line.ts[i];
-                line.seg[j] = line.seg[i];
-                line.pos[j] = line.pos[i];
-                ++j;
-            }
-        line.ids.resize(j);
-        line.colors.resize(j);
-        line.ts.resize(j);
-        line.seg.resize(j);
-        line.pos.resize(j);
-        line.alive.clear();
     }
 }

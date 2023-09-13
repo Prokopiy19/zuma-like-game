@@ -15,7 +15,6 @@ struct GameState {
     void find_collisions();
     void projectiles_gone();
     void collide(Projectile& proj, LineSimulation& line, int ball_id);
-    void kill_balls();
 
     Timer timer;
     int cnt = 500; // balls not spawned yet

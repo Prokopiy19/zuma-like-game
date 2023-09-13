@@ -33,7 +33,7 @@ public:
     std::vector<SEG_ID> seg;
     // SOA
 
-
+    void kill_balls();
     void divide_segments();
     Path path;
 private:

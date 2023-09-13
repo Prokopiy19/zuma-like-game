@@ -122,6 +122,27 @@ void LineSimulation::divide_segments()
         }
 }
 
+void LineSimulation::kill_balls()
+{
+    int j = 0;
+    const int size = alive.size();
+    for(int i = 0; i < size; ++i)
+        if (alive[i]) {
+            ids[j] = ids[i];
+            colors[j] = colors[i];
+            ts[j] = ts[i];
+            seg[j] = seg[i];
+            pos[j] = pos[i];
+            ++j;
+        }
+    ids.resize(j);
+    colors.resize(j);
+    ts.resize(j);
+    seg.resize(j);
+    pos.resize(j);
+    alive.clear();
+}
+
 void LineSimulation::remove_unused_segments()
 {
     cnt_segments.assign(segments.size(), 0);
