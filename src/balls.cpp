@@ -5,6 +5,7 @@
 
 #include "colors.h"
 #include "game.h"
+#include "settings.h"
 
 namespace {
 
@@ -26,12 +27,10 @@ void LineSimulation::update(const float delta)
     divide_segments();
     remove_unused_segments();
 
-    auto& first = get_seg(seg.back());
-    first.vel += 0.5 * acceleration * delta;
-    first.vel = std::min(first.vel, speed_max);
+    accelerate_segments(delta/2);
     move_segments(delta);
-    first.vel += 0.5 * acceleration * delta;
-    first.vel = std::min(first.vel, speed_max);
+    accelerate_segments(delta/2);
+    
     calc_pos();
     collide();
     kill_balls();
@@ -69,16 +68,23 @@ void LineSimulation::collide()
 {
     for (int i = seg.size()-2; i >= 0; --i)
         if (seg[i] != seg[i+1] && std::fabs(ts[i] - ts[i+1]) < 2.0f * BALL_RADIUS) {
+            auto& segment0 = get_seg(seg[i]);
+            auto& segment1 = get_seg(seg[i+1]);
+            float new_vel = segment0.vel + segment1.vel;
             if (colors[i] == colors[i+1]) {
                 int cnt = match_colors(i, -1, false) + match_colors(i+1, 1, false);
                 if (cnt >= 3) {
                     match_colors(i, -1, true);
                     match_colors(i+1, 1, true);
+                    new_vel *= 0.5f;
+                    segment0.vel = new_vel;
+                    segment1.vel = new_vel;
                     continue;
                 }
             }
             remove_seg(seg[i]);
             replace_seg(i, seg[i+1]);
+            get_seg(seg[i+1]).vel = new_vel * 0.5f;
         }
 }
 
@@ -192,4 +198,26 @@ int LineSimulation::match_colors(const int i, int step, const bool destroy)
         else
             break;
     return cnt;
+}
+
+void LineSimulation::accelerate_segments(const float delta)
+{
+    get_seg(seg.back()).vel += BALL_ACCEL * delta;
+    
+    for (int i = seg.size() - 2; i >= 0; --i)
+        if (seg[i] != seg[i+1]) {
+            if(colors[i] == colors[i+1])
+                get_seg(seg[i]).vel -= BACK_ACCEL * delta;
+            else {
+                auto& segment = get_seg(seg[i]);
+                float sign = 1.0f;
+                if (segment.vel < 0)
+                    sign = -1.0f;
+                segment.vel -= std::min(sign * FRICTION_ACCEL, segment.vel);
+            }
+        }
+    for (auto& segment : segments) {
+        segment.vel = std::min(segment.vel, speed_max);
+        segment.vel = std::max(segment.vel, -BACK_SPEED);
+    }
 }

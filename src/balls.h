@@ -8,6 +8,7 @@
 
 #include "segment.h"
 #include "colors.h"
+#include "settings.h"
 #include "path.h"
 
 constexpr float BALL_RADIUS = 1.0f;
@@ -39,12 +40,8 @@ public:
     Path path;
     std::vector<Segment> segments;
 private:
-    constexpr static float SPEED = 2.0;
-    constexpr static float FRONT_SPEED = 1.0;
-
-    float speed = 0.;
+    float speed = 0.0f;
     float speed_max = SPEED;
-    constexpr static float acceleration = 0.3;
     
     void collide();
     void spawn();
@@ -58,6 +55,7 @@ private:
     void move_segments(float delta);
     void remove_unused_segments();
     int match_colors(int i, int step, bool destroy);
+    void accelerate_segments(float delta);
 };
 
 #endif //BALLS_H
