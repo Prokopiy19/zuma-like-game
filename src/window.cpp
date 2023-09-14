@@ -99,37 +99,16 @@ void set_min_max_window_size(SDL_Window* ptr_window)
     }
 }
 
-// Makes a window transparent by setting a transparency color.
-bool MakeWindowTransparent(SDL_Window* window, int alpha) {
+bool make_window_transparent(SDL_Window* window) {
 #ifdef _WIN32
-    COLORREF colorKey = RGB(192, 192, 192);
-    // Get window handle (https://stackoverflow.com/a/24118145/3357935)
-    SDL_SysWMinfo wmInfo;
-    SDL_VERSION(&wmInfo.version);  // Initialize wmInfo
-    SDL_GetWindowWMInfo(window, &wmInfo);
-    HWND hWnd = wmInfo.info.win.window;
-
-    // Change window type to layered (https://stackoverflow.com/a/3970218/3357935)
-    SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
-
-    // Set transparency color
-    return SetLayeredWindowAttributes(hWnd, colorKey, alpha, LWA_COLORKEY);
+    SDL_SysWMinfo wm_info;
+    SDL_VERSION(&wm_info.version);
+    SDL_GetWindowWMInfo(window, &wm_info);
+    auto hwnd = wm_info.info.win.window;
+    SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
+    return SetLayeredWindowAttributes(hwnd, RGB(192, 192, 192), 255, LWA_COLORKEY);
 #else
     return true;
-#endif
-}
-
-void make_window_non_transparent(SDL_Window* window, int alpha) {
-#ifdef _WIN32
-    COLORREF colorKey = RGB(192, 192, 192);
-    SDL_SysWMinfo wmInfo;
-    SDL_VERSION(&wmInfo.version);  // Initialize wmInfo
-    SDL_GetWindowWMInfo(window, &wmInfo);
-    HWND hWnd = wmInfo.info.win.window;
-
-    SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) & ~WS_EX_LAYERED & ~WS_EX_TRANSPARENT);
-#else
-    return;
 #endif
 }
 
@@ -190,7 +169,7 @@ void toggle_window_transparent()
 {
     window.transparent = !window.transparent;
     if (window.transparent) {
-        MakeWindowTransparent(window.ptr, 0);
+        make_window_transparent(window.ptr);
         int x, y;
         SDL_GetWindowPosition(window.ptr, &x, &y);
         window.ptr2 = SDL_CreateWindow(
