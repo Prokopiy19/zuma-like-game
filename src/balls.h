@@ -58,7 +58,6 @@ private:
     void move_segments(float delta);
     void remove_unused_segments();
     int match_colors(int i, int step, bool destroy);
-    int destroy_color(int i, int step);
 };
 
 #endif //BALLS_H
