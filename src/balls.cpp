@@ -178,7 +178,7 @@ void LineSimulation::remove_unused_segments()
     cnt_segments.clear();
 }
 
-int LineSimulation::match_colors(const int i, int step, bool destroy)
+int LineSimulation::match_colors(const int i, int step, const bool destroy)
 {
     int cnt = 0;
     const int size = colors.size();
