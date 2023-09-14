@@ -205,18 +205,18 @@ void LineSimulation::accelerate_segments(const float delta)
     get_seg(seg.back()).vel += BALL_ACCEL * delta;
     
     for (int i = seg.size() - 2; i >= 0; --i)
-        if (seg[i] != seg[i+1]) {
+        if (seg[i] != seg[i+1])
             if(colors[i] == colors[i+1])
                 get_seg(seg[i]).vel -= BACK_ACCEL * delta;
-            else {
-                auto& segment = get_seg(seg[i]);
-                float sign = 1.0f;
-                if (segment.vel < 0)
-                    sign = -1.0f;
-                segment.vel -= std::min(sign * FRICTION_ACCEL, segment.vel);
-            }
-        }
     for (auto& segment : segments) {
+        float sign = 1.0f;
+        if (segment.vel < 0)
+            sign = -1.0f;
+        if (FRICTION_ACCEL * delta < std::fabs(segment.vel))
+            segment.vel -= sign * FRICTION_ACCEL * delta;
+        else
+            segment.vel = 0.0f;
+
         segment.vel = std::min(segment.vel, speed_max);
         segment.vel = std::max(segment.vel, -BACK_SPEED);
     }
