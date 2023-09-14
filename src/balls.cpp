@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "glm/geometric.hpp"
+
 #include "colors.h"
 #include "game.h"
 #include "settings.h"
@@ -220,4 +222,25 @@ void LineSimulation::accelerate_segments(const float delta)
         segment.vel = std::min(segment.vel, speed_max);
         segment.vel = std::max(segment.vel, -BACK_SPEED);
     }
+}
+
+void LineSimulation::collide_w_ball(const int i, const glm::vec2 proj_pos, const Color color)
+{
+    auto tangent =path.tangent(ts[i]);
+    auto vec = proj_pos - pos[i];
+    auto cosp = glm::dot(tangent, vec) / glm::length(tangent) / glm::length(vec);
+    if (cosp >= 0)
+        insert_ball(i, ts[i] + 2.0f * BALL_RADIUS, seg[i], color);
+    else
+        insert_ball(i+1, ts[i] - 2.0f * BALL_RADIUS, seg[i], color);
+}
+
+void LineSimulation::insert_ball(const int i, const float t, const SEG_ID sid, const Color color)
+{
+    ids.insert(ids.begin() + i, id++);
+    ts.insert(ts.begin() + i, t);
+    colors.insert(colors.begin() + i, color);
+    pos.insert(pos.begin() + i, path(t));
+    alive.insert(alive.begin() + i, true);
+    seg.insert(seg.begin() + i, sid);
 }

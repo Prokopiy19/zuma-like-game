@@ -30,7 +30,7 @@ void Shooter::set_mode(ShooterMode mode)
     }
 }
 
-void Shooter::shoot_proj(glm::vec2 target, float vel, ProjectileType proj_type)
+void Shooter::shoot_proj(glm::vec2 target, float vel, ProjectileType proj_type, Color color)
 {
     auto dir = target - this->pos;
     if (dir == glm::vec2(0.0f, 0.0f))
@@ -39,7 +39,7 @@ void Shooter::shoot_proj(glm::vec2 target, float vel, ProjectileType proj_type)
         .pos = this->pos,
         .vel = glm::normalize(target - this->pos) * vel,
         .type = proj_type,
-        .color = COLOR_NONE,
+        .color = color,
     });
 }
 
@@ -52,12 +52,12 @@ void Shooter::shoot(glm::vec2 target)
     switch (mode) {
         case SHOOTER_BALL: {
             const float vel = 60.0f;
-            shoot_proj(target, vel, PROJ_BALL);
+            shoot_proj(target, vel, PROJ_BALL, COLOR_RED);
             break;
         }
         case SHOOTER_MISSILE: {
             const float vel = 60.0f;
-            shoot_proj(target, vel, PROJ_MISSILE);
+            shoot_proj(target, vel, PROJ_MISSILE, COLOR_NONE);
             break;
         }
         case SHOOTER_TOTAL: {

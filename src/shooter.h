@@ -24,7 +24,7 @@ struct Shooter {
     void handle_events(SDL_Event& e);
 private:
     ShooterMode mode = SHOOTER_BALL;
-    void shoot_proj(glm::vec2 target, float vel, ProjectileType proj_type);
+    void shoot_proj(glm::vec2 target, float vel, ProjectileType proj_type, Color color);
 };
 
 #endif//SHOOTER_H

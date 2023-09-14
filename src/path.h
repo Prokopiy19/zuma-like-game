@@ -12,6 +12,7 @@ struct Path {
     Path() = delete;
     Path(Curve f, float grid_h);
     glm::vec2 operator()(float t) const;
+    glm::vec2 tangent(float t) const;
     //needs something to get t limit
     
     std::vector<glm::vec2> p;

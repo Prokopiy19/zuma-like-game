@@ -37,6 +37,7 @@ public:
     void divide_segments();
     Path path;
     std::vector<Segment> segments;
+    void collide_w_ball(int i, const glm::vec2 pos, Color color);
 private:
     float speed = 0.0f;
     float speed_max = SPEED;
@@ -54,6 +55,7 @@ private:
     void remove_unused_segments();
     int match_colors(int i, int step, bool destroy);
     void accelerate_segments(float delta);
+    void insert_ball(int i, float t, SEG_ID sid, Color color);
 };
 
 #endif //BALLS_H

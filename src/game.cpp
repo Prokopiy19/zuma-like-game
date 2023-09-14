@@ -54,6 +54,7 @@ void GameState::collide(Projectile& proj, LineSimulation& line, const int i)
     switch(proj.type) {
         case PROJ_BALL: {
             proj.type = PROJ_DEAD;
+            line.collide_w_ball(i, proj.pos, proj.color);
             break;
         }
         case PROJ_MISSILE: {

@@ -25,8 +25,8 @@ extern std::array<float, PROJ_TOTAL> proj_radius;
 struct Projectile {
     glm::vec2 pos;
     glm::vec2 vel;
-    ProjectileType type;
-    Color color;
+    ProjectileType type = PROJ_BALL;
+    Color color = COLOR_RED;
 };
 
 #endif//PROJECTILE_H

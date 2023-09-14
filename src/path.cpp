@@ -38,7 +38,7 @@ Path::Path(std::function<glm::vec2(float)> f, float grid_h) : h(grid_h)
     }
 }
 
-glm::vec2 Path::operator()(float t) const
+glm::vec2 Path::operator()(const float t) const
 {
     float x = t / h;
     x = std::max(x, 0.0f);
@@ -48,4 +48,15 @@ glm::vec2 Path::operator()(float t) const
         return p.back();
     else
         return (1.0f-r)*p[i] + r*p[i+1];
+}
+
+glm::vec2 Path::tangent(const float t) const
+{
+    float x = t / h;
+    x = std::max(x, 0.0f);
+    int i = static_cast<int>(x);
+    if (i >= p.size() - 1)
+        return glm::vec2(0.0f, 0.0f);
+    else
+        return p[i+1] - p[i];
 }
