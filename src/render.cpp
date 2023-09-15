@@ -66,18 +66,10 @@ bool load_media()
     return true;
 }
 
-void free_texture(SDL_Texture* texture)
-{
-    if (texture) {
-        SDL_DestroyTexture(texture);
-        texture = nullptr;
-    }
-}
-
 void free_media()
 {
     for (auto texture : m.destroy_list)
-        free_texture(texture);
+        SDL_DestroyTexture(texture);
 }
 
 void render_present()
