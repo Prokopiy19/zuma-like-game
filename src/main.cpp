@@ -17,7 +17,6 @@
 void close()
 {
     cursor_free();
-    free_media();
     render_close();
     window_close();
 }

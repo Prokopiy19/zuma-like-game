@@ -1,6 +1,7 @@
 #include "render.h"
 
 #include <string>
+#include <vector>
 
 #include "colors.h"
 #include "game_rect.h"
@@ -10,7 +11,9 @@ SDL_Renderer* ptr_renderer = nullptr;
 
 //resources
 struct {
+    std::vector<SDL_Texture*> destroy_list;
     std::array<SDL_Texture*, COLOR_TOTAL> colors;
+    SDL_Texture* missile = nullptr;
     SDL_Texture* path = nullptr;
 } m;
 
@@ -40,19 +43,18 @@ void render_close()
 bool load_texture_from_file(SDL_Texture *&ptr_texture, const std::string& path)
 {
 	SDL_Surface* surface = IMG_Load(path.c_str());
-	if( surface == nullptr )
+	if(!surface)
 	{
         SDL_Log("IMG_Load %s: %s\n", path.c_str(), IMG_GetError());
         return false;
     }
     SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0xFF, 0x00, 0xFF));
     ptr_texture = SDL_CreateTextureFromSurface(ptr_renderer, surface);
-    if(ptr_texture == nullptr)
-    {
+    if(!ptr_texture)
         SDL_Log("SDL_CreateTextureFromSurface failed %s: %s\n", path.c_str(), SDL_GetError());
-    }
     SDL_FreeSurface(surface);
-	return ptr_texture != nullptr;
+    m.destroy_list.push_back(ptr_texture);
+	return ptr_texture;
 }
 
 bool load_media()
@@ -74,10 +76,8 @@ void free_texture(SDL_Texture* texture)
 
 void free_media()
 {
-    //Free resources
-    free_texture(m.path);
-    for (int i = 0; i < COLOR_TOTAL; ++i)
-        free_texture(m.colors[i]);
+    for (auto texture : m.destroy_list)
+        free_texture(texture);
 }
 
 void render_present()
@@ -135,6 +135,7 @@ void prepare_scene()
 void draw_path(const std::vector<glm::vec2>& control_points, const Path& path)
 {
     m.path = SDL_CreateTexture(ptr_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1920, 1080);
+    m.destroy_list.push_back(m.path);
     SDL_SetRenderTarget(ptr_renderer, m.path);
     adjust_render_rect(1920, 1080);
     SDL_SetRenderDrawColor(ptr_renderer, 192, 192, 192, SDL_ALPHA_OPAQUE);
