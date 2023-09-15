@@ -29,13 +29,13 @@ void LineSimulation::update(const float delta)
     divide_segments();
     remove_unused_segments();
 
+    collide();
+    calc_pos();
+    kill_balls();
+
     accelerate_segments(delta/2);
     move_segments(delta);
     accelerate_segments(delta/2);
-    
-    calc_pos();
-    collide();
-    kill_balls();
 }
 
 void LineSimulation::calc_pos()
@@ -84,7 +84,7 @@ void LineSimulation::collide()
             }
             remove_seg(seg[i]);
             replace_seg(i, seg[i], seg[i+1], -1);
-            get_seg(seg[i+1]).vel = new_vel * 0.5f;
+            get_seg(seg[i+1]).vel = new_vel;
         }
 }
 
@@ -232,11 +232,11 @@ void LineSimulation::collide_w_ball(const int i, const glm::vec2 proj_pos, const
     float vel = get_seg(seg[i]).vel;
     auto sid = new_seg(vel);
     if (cosp >= 0) {
-        insert_ball(i, ts[i] + 2.0f * BALL_RADIUS - EPS, new_seg(vel), color);
+        insert_ball(i, ts[i] + 2.0f * BALL_RADIUS - 2.0f * EPS, new_seg(), color);
         replace_seg(i-1, seg[i+1], sid, -1);
     }
     else {
-        insert_ball(i+1, ts[i] - 2.0f * BALL_RADIUS + EPS, new_seg(vel), color);
+        insert_ball(i+1, ts[i] - 2.0f * BALL_RADIUS + 2.0f * EPS, new_seg(), color);
         replace_seg(i+2, seg[i], sid, 1);
     }
 }
