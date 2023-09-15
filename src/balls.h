@@ -49,7 +49,7 @@ private:
     SEG_ID max_seg_id = 0;
     Segment& get_seg(SEG_ID id);
     void remove_seg(SEG_ID id);
-    SEG_ID new_seg(float vel = 0.0);
+    SEG_ID new_seg(float vel);
     void replace_seg(int i, SEG_ID from, SEG_ID to, int step);
     void move_segments(float delta);
     void remove_unused_segments();
