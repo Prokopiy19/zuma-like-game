@@ -1,14 +1,24 @@
 #include "render.h"
 
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <string>
 #include <vector>
+
+#include "glm/geometric.hpp"
+#include "glm/trigonometric.hpp"
 
 #include "colors.h"
 #include "game_rect.h"
 #include "window.h"
 
+#ifndef M_PI
+constexpr float M_PI = 3.141592653589793238f;
+#endif//M_PI
+
 SDL_Renderer* ptr_renderer = nullptr;
 
+namespace {
 //resources
 struct {
     std::vector<SDL_Texture*> destroy_list;
@@ -16,29 +26,6 @@ struct {
     SDL_Texture* missile = nullptr;
     SDL_Texture* path = nullptr;
 } m;
-
-bool render_init()
-{
-    render_close();
-    Uint32 flags = SDL_RENDERER_ACCELERATED;
-    if (!window.transparent)
-        flags |= SDL_RENDERER_PRESENTVSYNC;
-    ptr_renderer = SDL_CreateRenderer(window.ptr, -1, flags);
-    if (!ptr_renderer) {
-        SDL_Log("SDL_CreateRenderer failed: %s\n", SDL_GetError());
-        return false;
-    }
-    return load_media();
-}
-
-void render_close()
-{
-    if (ptr_renderer) {
-        free_media();
-        SDL_DestroyRenderer(ptr_renderer);
-        ptr_renderer = nullptr;
-    }
-}
 
 bool load_texture_from_file(SDL_Texture *&ptr_texture, const std::string& path)
 {
@@ -63,6 +50,8 @@ bool load_media()
         X_COLOR_TEXTURES
     #undef X
 
+    load_texture_from_file(m.missile, "data/missile.png");
+
     return true;
 }
 
@@ -70,6 +59,33 @@ void free_media()
 {
     for (auto texture : m.destroy_list)
         SDL_DestroyTexture(texture);
+    m.destroy_list.clear();
+}
+
+} // namespace
+
+
+bool render_init()
+{
+    render_close();
+    Uint32 flags = SDL_RENDERER_ACCELERATED;
+    if (!window.transparent)
+        flags |= SDL_RENDERER_PRESENTVSYNC;
+    ptr_renderer = SDL_CreateRenderer(window.ptr, -1, flags);
+    if (!ptr_renderer) {
+        SDL_Log("SDL_CreateRenderer failed: %s\n", SDL_GetError());
+        return false;
+    }
+    return load_media();
+}
+
+void render_close()
+{
+    if (ptr_renderer) {
+        free_media();
+        SDL_DestroyRenderer(ptr_renderer);
+        ptr_renderer = nullptr;
+    }
 }
 
 void render_present()
@@ -82,9 +98,8 @@ void render_present()
 //////////////////////////////////////////////
 
 //64x36 field game coordinate system
-//radius=1
-//
-//convert x
+
+namespace {
 
 void draw_ball(float x, float y, Color color)
 {
@@ -106,6 +121,39 @@ void draw_circle(float x, float y, float r, Color color)
     SDL_RenderCopyF(ptr_renderer, m.colors[color], nullptr, &rect);
 }
 
+void draw_shooter()
+{
+    if (state.shooters.empty())
+        return;
+    auto& shooter = state.shooters[0];
+    const float a = sx(SHOOTER_RADIUS);
+    SDL_FRect frect = {
+        .x = cx(shooter.pos.x) - 0.5f * a,
+        .y = cx(shooter.pos.y) - 0.5f * a, 
+        .w = a,
+        .h = a,
+    };
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    const glm::vec2 mouse_pos(xx(x), yy(y));
+    const auto direction = glm::normalize(mouse_pos - shooter.pos);
+    float angle = glm::acos(direction.x);
+    if (direction.y < 0)
+        angle = 2.0f * M_PI - angle;
+    const float degrees = 180.0f * angle / M_PI;
+    SDL_RenderCopyExF(
+        ptr_renderer, 
+        m.missile, 
+        nullptr, 
+        &frect, 
+        degrees, 
+        nullptr, 
+        SDL_FLIP_NONE
+    );
+}
+
+} // namespace
+
 void prepare_scene()
 {
     adjust_render_rect(window.width, window.height);
@@ -122,6 +170,7 @@ void prepare_scene()
     for (const auto& proj : state.projectiles) {
         draw_circle(proj.pos.x, proj.pos.y, sx(proj_radius[proj.type]), proj.color);
     }
+    draw_shooter();
 }
 
 void draw_path(const std::vector<glm::vec2>& control_points, const Path& path)

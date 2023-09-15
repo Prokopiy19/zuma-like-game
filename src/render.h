@@ -9,8 +9,6 @@
 bool render_init();
 void render_close();
 
-bool load_media();
-void free_media();
 void render_present();
 void prepare_scene();
 
