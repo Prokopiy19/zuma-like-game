@@ -10,4 +10,6 @@ constexpr float BACK_ACCEL = 5.0f + FRICTION_ACCEL;
 constexpr static float SPEED = 3.0f;
 constexpr static float BACK_SPEED = 15.0f;
 
+constexpr float EPS = 1e-3f;
+
 #endif//SETTINGS_H

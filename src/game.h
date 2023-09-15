@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <chrono>
 #include <vector>
 
 #include "balls.h"
@@ -24,7 +25,7 @@ struct GameState {
 
     std::vector<Projectile> projectiles;
 
-    std::default_random_engine e;
+    std::default_random_engine e = std::default_random_engine(std::chrono::high_resolution_clock::now().time_since_epoch().count());
     std::uniform_int_distribution<> u = std::uniform_int_distribution<>(0, COLOR_TOTAL-1);
 };
 extern GameState state;

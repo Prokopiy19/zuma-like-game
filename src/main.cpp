@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <chrono>
 #include <random>
 #include <vector>
 
@@ -67,7 +66,6 @@ int main(int argv, char** args)
     Spline spline(control);
     Path path(spline, 0.5f * BALL_RADIUS);
 
-    auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
     state.lines.emplace_back(path);
     Shooter shooter;
     shooter.pos = glm::vec2(40, 18);

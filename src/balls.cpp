@@ -74,18 +74,16 @@ void LineSimulation::collide()
             auto& segment1 = get_seg(seg[i+1]);
             float new_vel = segment0.vel + segment1.vel;
             if (colors[i] == colors[i+1]) {
-                int cnt = match_colors(i, -1, false) + match_colors(i+1, 1, false);
-                if (cnt >= 3) {
+                int cnt = match_colors(i, -1, false) +
+                          match_colors(i+1, 1, false);
+                if (cnt >= 3 || !alive[i] || !alive[i+1]) {
                     match_colors(i, -1, true);
                     match_colors(i+1, 1, true);
-                    new_vel *= 0.5f;
-                    segment0.vel = new_vel;
-                    segment1.vel = new_vel;
                     continue;
                 }
             }
             remove_seg(seg[i]);
-            replace_seg(i, seg[i+1]);
+            replace_seg(i, seg[i], seg[i+1], -1);
             get_seg(seg[i+1]).vel = new_vel * 0.5f;
         }
 }
@@ -106,18 +104,21 @@ void LineSimulation::remove_seg(const SEG_ID id)
     std::erase_if(segments, [id](const Segment& seg) { return seg.id == id; });
 }
 
-SEG_ID LineSimulation::new_seg()
+SEG_ID LineSimulation::new_seg(const float vel)
 {
-    segments.push_back({ .id=max_seg_id++, .vel=0.0f });
+    segments.push_back({ .id=max_seg_id++, .vel=vel });
     return max_seg_id-1;
 }
 
-void LineSimulation::replace_seg(const int i, const SEG_ID id)
+void LineSimulation::replace_seg(const int i, const SEG_ID from, const SEG_ID to, int step)
 {
-    const SEG_ID repl_seg = seg[i];
-    for (int j = i; j >= 0; --j)
-        if (seg[j] == repl_seg)
-            seg[j] = id;
+    if (step >= 0)
+        step = 1;
+    else
+        step = -1;
+    for (int j = i; 0 <= j && j < seg.size(); j += step)
+        if (seg[j] == from)
+            seg[j] = to;
         else
             break;
 }
@@ -140,11 +141,10 @@ void LineSimulation::move_segments(const float delta)
 
 void LineSimulation::divide_segments()
 {
-    constexpr float EPS = 1e-3f;
     for (int i = ts.size() - 2; i >= 0; --i)
         if (std::fabs(ts[i] - ts[i+1]) > 2.0f * BALL_RADIUS + EPS &&
                 seg[i] == seg[i+1]) {
-            replace_seg(i, new_seg());
+            replace_seg(i, seg[i], new_seg(), -1);
         }
 }
 
@@ -195,7 +195,7 @@ int LineSimulation::match_colors(const int i, int step, const bool destroy)
     for (int j = i; 0 <= j && j < size; j += step)
         if (seg[j] == seg[i] && colors[j] == colors[i]) {
             ++cnt;
-            alive[j] = !destroy;
+            alive[j] = alive[j] && !destroy;
         }
         else
             break;
@@ -226,13 +226,19 @@ void LineSimulation::accelerate_segments(const float delta)
 
 void LineSimulation::collide_w_ball(const int i, const glm::vec2 proj_pos, const Color color)
 {
-    auto tangent =path.tangent(ts[i]);
+    auto tangent = path.tangent(ts[i]);
     auto vec = proj_pos - pos[i];
     auto cosp = glm::dot(tangent, vec) / glm::length(tangent) / glm::length(vec);
-    if (cosp >= 0)
-        insert_ball(i, ts[i] + 2.0f * BALL_RADIUS, seg[i], color);
-    else
-        insert_ball(i+1, ts[i] - 2.0f * BALL_RADIUS, seg[i], color);
+    float vel = get_seg(seg[i]).vel;
+    auto sid = new_seg(vel);
+    if (cosp >= 0) {
+        insert_ball(i, ts[i] + 2.0f * BALL_RADIUS - EPS, new_seg(vel), color);
+        replace_seg(i-1, seg[i+1], sid, -1);
+    }
+    else {
+        insert_ball(i+1, ts[i] - 2.0f * BALL_RADIUS + EPS, new_seg(vel), color);
+        replace_seg(i+2, seg[i], sid, 1);
+    }
 }
 
 void LineSimulation::insert_ball(const int i, const float t, const SEG_ID sid, const Color color)
