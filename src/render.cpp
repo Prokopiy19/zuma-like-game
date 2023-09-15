@@ -128,7 +128,7 @@ void prepare_scene()
         }
     }
     for (const auto& proj : state.projectiles) {
-        draw_circle(proj.pos.x, proj.pos.y, sx(proj_radius[proj.type]), COLOR_RED);
+        draw_circle(proj.pos.x, proj.pos.y, sx(proj_radius[proj.type]), proj.color);
     }
 }
 

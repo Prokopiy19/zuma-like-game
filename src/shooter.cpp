@@ -2,6 +2,7 @@
 
 #include <glm/geometric.hpp>
 
+#include "cursor.h"
 #include "game.h"
 #include "game_rect.h"
 
@@ -16,6 +17,9 @@ void Shooter::set_mode(ShooterMode mode)
     this->mode = mode;
     switch(mode) {
         case SHOOTER_BALL: {
+            random_color();
+            swap_color();
+            random_color();
             break;
         }
         case SHOOTER_MISSILE: {
@@ -52,7 +56,9 @@ void Shooter::shoot(glm::vec2 target)
     switch (mode) {
         case SHOOTER_BALL: {
             const float vel = 60.0f;
-            shoot_proj(target, vel, PROJ_BALL, COLOR_RED);
+            shoot_proj(target, vel, PROJ_BALL, ball_color);
+            swap_color();
+            random_color();
             break;
         }
         case SHOOTER_MISSILE: {
@@ -90,4 +96,22 @@ void Shooter::handle_events(SDL_Event& e)
         
         }
     }
+}
+
+void Shooter::set_color(Color color)
+{
+    ball_color = color;
+    set_cursor(color);
+}
+
+void Shooter::swap_color()
+{
+    Color tmp = ball_color;
+    set_color(reserve);
+    reserve = tmp;
+}
+
+void Shooter::random_color()
+{
+    reserve = static_cast<Color>(state.u(state.e));
 }
