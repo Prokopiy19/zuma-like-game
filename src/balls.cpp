@@ -204,6 +204,8 @@ int LineSimulation::match_colors(const int i, int step, const bool destroy)
 
 void LineSimulation::accelerate_segments(const float delta)
 {
+    if (ids.empty())
+        return;
     get_seg(seg.back()).vel += BALL_ACCEL * delta;
     
     for (int i = seg.size() - 2; i >= 0; --i)
