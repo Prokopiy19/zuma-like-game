@@ -12,6 +12,7 @@ enum ShooterMode {
 };
 
 struct Shooter {
+    Shooter() { set_mode(SHOOTER_BALL); }
     glm::vec2 pos;
     float reload = 0.8f;
     float reload_progress = 0.0f;
