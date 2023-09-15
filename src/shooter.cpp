@@ -79,13 +79,22 @@ void Shooter::shoot(glm::vec2 target)
 void Shooter::handle_events(SDL_Event& e)
 {
     if (e.type == SDL_MOUSEBUTTONDOWN) {
-        shoot(glm::vec2(xx(e.button.x), yy(e.button.y)));
+        switch (e.button.button) {
+            case SDL_BUTTON_LEFT: {
+                shoot(glm::vec2(xx(e.button.x), yy(e.button.y)));
+                break;
+            }
+            case SDL_BUTTON_RIGHT: {
+                swap_color();
+                break;
+            }
+        }
     }
     else if (e.type == SDL_KEYDOWN) {
         switch (e.key.keysym.sym) {
             //CHEATS
             case SDLK_1: {
-                mode = SHOOTER_BALL;
+                set_mode(SHOOTER_BALL);
                 break;
             }
             case SDLK_2: {
@@ -106,9 +115,11 @@ void Shooter::set_color(Color color)
 
 void Shooter::swap_color()
 {
-    Color tmp = ball_color;
-    set_color(reserve);
-    reserve = tmp;
+    if (mode == SHOOTER_BALL) {
+        Color tmp = ball_color;
+        set_color(reserve);
+        reserve = tmp;
+    }
 }
 
 void Shooter::random_color()
