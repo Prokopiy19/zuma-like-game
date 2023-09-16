@@ -54,8 +54,9 @@ void LineSimulation::spawn()
         alive.push_back(true);
         colors.push_back(color);
         if (ts.empty() || ts.back() > 2.0f * BALL_RADIUS) {
+            float vel = (ts.empty()) ? SPAWN_SPEED : BALL_ACCEL / FRICTION;
             ts.push_back(0);
-            seg.push_back(new_seg(SPEED));
+            seg.push_back(new_seg(vel));
         }
         else {
             ts.push_back(ts.back() - 2.0f * BALL_RADIUS);
@@ -213,16 +214,7 @@ void LineSimulation::accelerate_segments(const float delta)
             if(colors[i] == colors[i+1])
                 get_seg(seg[i]).vel -= BACK_ACCEL * delta;
     for (auto& segment : segments) {
-        float sign = 1.0f;
-        if (segment.vel < 0)
-            sign = -1.0f;
-        if (FRICTION_ACCEL * delta < std::fabs(segment.vel))
-            segment.vel -= sign * FRICTION_ACCEL * delta;
-        else
-            segment.vel = 0.0f;
-
-        segment.vel = std::min(segment.vel, speed_max);
-        segment.vel = std::max(segment.vel, -BACK_SPEED);
+        segment.vel -= segment.vel * FRICTION * delta;
     }
 }
 

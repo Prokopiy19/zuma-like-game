@@ -38,10 +38,7 @@ public:
     Path path;
     std::vector<Segment> segments;
     void collide_w_ball(int i, const glm::vec2 pos, Color color);
-private:
-    float speed = 0.0f;
-    float speed_max = SPEED;
-    
+private:    
     void collide();
     void spawn();
 
