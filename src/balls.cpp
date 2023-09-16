@@ -216,6 +216,8 @@ void LineSimulation::accelerate_segments(const float delta)
     for (auto& segment : segments) {
         segment.vel -= segment.vel * FRICTION * delta;
     }
+    if (ts.front() < 0)
+        get_seg(seg.back()).vel = SPAWN_SPEED;
 }
 
 void LineSimulation::collide_w_ball(const int i, const glm::vec2 proj_pos, const Color color)
