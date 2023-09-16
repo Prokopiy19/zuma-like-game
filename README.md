@@ -7,3 +7,5 @@ The game is written in C++ using SDL2. SDL_renderer graphics is used. Levels can
 You can make background transparent by pressing T. And then you can play the game on top of Youtube videos, movies. 
 
 Controls: LMB to shoot, RMB to swap balls. T to make window transparent.
+
+![screenshot](game.png?raw=true)
