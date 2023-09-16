@@ -80,6 +80,8 @@ void LineSimulation::collide()
                 if (cnt >= 3 || !alive[i] || !alive[i+1]) {
                     match_colors(i, -1, true);
                     match_colors(i+1, 1, true);
+                    segment0.vel = new_vel * 0.5f;
+                    segment1.vel = new_vel * 0.5f;
                     continue;
                 }
             }
