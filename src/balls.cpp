@@ -91,7 +91,6 @@ void LineSimulation::collide()
         }
 }
 
-
 Segment& LineSimulation::get_seg(const SEG_ID id)
 {
     for (auto& s : segments)
