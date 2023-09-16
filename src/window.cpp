@@ -50,6 +50,7 @@ void set_borderless_fullscreen(bool f)
 
         SDL_Rect bounds;
         SDL_GetDisplayBounds(window.display, &bounds);
+        SDL_SetWindowBordered(window.ptr, SDL_FALSE);
         SDL_SetWindowBordered(window.ptr2, SDL_FALSE);
         SDL_SetWindowResizable(window.ptr2, SDL_FALSE);
         SDL_SetWindowSize(window.ptr2, bounds.w, bounds.h);
@@ -58,6 +59,7 @@ void set_borderless_fullscreen(bool f)
     }
     else {
         window.borderless_fullscreen = false;
+        SDL_SetWindowBordered(window.ptr, SDL_TRUE);
         SDL_SetWindowBordered(window.ptr2, SDL_TRUE);
         SDL_SetWindowResizable(window.ptr2, SDL_TRUE);
         SDL_SetWindowSize(window.ptr2, window.old_width, window.old_height);
@@ -185,6 +187,8 @@ void toggle_window_transparent()
         set_min_max_window_size(window.ptr2);
         render_init();
         draw_path(std::vector<glm::vec2>(), state.lines[0].path);
+        if (window.borderless_fullscreen)
+            set_borderless_fullscreen(true);
     }
     else {
         SDL_SetWindowOpacity(window.ptr, 1.0f);
