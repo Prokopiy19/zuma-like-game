@@ -36,6 +36,10 @@ void LineSimulation::update(const float delta)
     accelerate_segments(delta/2);
     move_segments(delta);
     accelerate_segments(delta/2);
+
+    if (!ts.empty() && ts.front() >= path.dest) {
+        get_seg(seg.back()).vel = SPAWN_SPEED;
+    }
 }
 
 void LineSimulation::calc_pos()

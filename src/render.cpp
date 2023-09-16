@@ -25,6 +25,7 @@ struct {
     std::array<SDL_Texture*, COLOR_TOTAL> colors;
     SDL_Texture* missile = nullptr;
     SDL_Texture* path = nullptr;
+    SDL_Texture* exit = nullptr;
 } m;
 
 bool load_texture_from_file(SDL_Texture *&ptr_texture, const std::string& path)
@@ -50,6 +51,7 @@ bool load_media()
         X_COLOR_TEXTURES
     #undef X
 
+    load_texture_from_file(m.exit, "data/exit.png");
     load_texture_from_file(m.missile, "data/missile.png");
 
     return true;
@@ -152,6 +154,18 @@ void draw_shooter()
     );
 }
 
+void draw_exit(const LineSimulation& line)
+{
+    SDL_FRect frect;
+    auto dest = line.path(line.path.dest);
+    float r = render_ball_r * 1.3f;
+    frect.x = cx(dest.x) - r;
+    frect.y = cy(dest.y) - r;
+    frect.w = 2.0f * r;
+    frect.h = 2.0f * r;
+    SDL_RenderCopyF(ptr_renderer, m.exit, nullptr, &frect);
+}
+
 } // namespace
 
 void prepare_scene()
@@ -186,5 +200,6 @@ void draw_path(const std::vector<glm::vec2>& control_points, const Path& path)
     }
     for (auto p : control_points)
         draw_circle(p.x, p.y, 3.0f, COLOR_RED);
+    draw_exit(state.lines[0]);
     SDL_SetRenderTarget(ptr_renderer, nullptr);
 }

@@ -17,6 +17,7 @@ struct Path {
     
     std::vector<glm::vec2> p;
     float h;
+    float dest;
 };
 
 #endif//PATH_H

@@ -36,6 +36,7 @@ Path::Path(std::function<glm::vec2(float)> f, float grid_h) : h(grid_h)
         }
 
     }
+    dest = (p.size()-1) * h;
 }
 
 glm::vec2 Path::operator()(const float t) const
