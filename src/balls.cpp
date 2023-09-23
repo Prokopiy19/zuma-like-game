@@ -44,9 +44,8 @@ void LineSimulation::update(const float delta)
 
 void LineSimulation::calc_pos()
 {
-    const int size = ids.size();
-    pos.resize(size);
-    for (int i = 0; i < size; ++i)
+    pos.resize(ids.size());
+    for (int i = 0; i < ids.size(); ++i)
         pos[i] = path(ts[i]);
 }
 
@@ -156,8 +155,7 @@ void LineSimulation::divide_segments()
 void LineSimulation::kill_balls()
 {
     int j = 0;
-    const int size = alive.size();
-    for(int i = 0; i < size; ++i)
+    for(int i = 0; i < alive.size(); ++i)
         if (alive[i]) {
             ids[j] = ids[i];
             colors[j] = colors[i];
@@ -183,8 +181,7 @@ void LineSimulation::remove_unused_segments()
         ++cnt_segments[i];
     }
     int j = 0;
-    const int size = segments.size();
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < segments.size(); ++i)
         if (cnt_segments[i] > 0)
             segments[j++] = segments[i];
     segments.resize(j);
@@ -194,10 +191,9 @@ void LineSimulation::remove_unused_segments()
 int LineSimulation::match_colors(const int i, int step, const bool destroy)
 {
     int cnt = 0;
-    const int size = colors.size();
     step = std::min(step, 1);
     step = std::max(step, -1);
-    for (int j = i; 0 <= j && j < size; j += step)
+    for (int j = i; 0 <= j && j < colors.size(); j += step)
         if (seg[j] == seg[i] && colors[j] == colors[i]) {
             ++cnt;
             alive[j] = alive[j] && !destroy;

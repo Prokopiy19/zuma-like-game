@@ -38,14 +38,11 @@ void GameState::find_collisions()
     for (auto& proj : projectiles) {
         const auto pos = proj.pos;
         if (-2.0f * BALL_RADIUS < pos.x && pos.x < GAME_WIDTH + 2.0f * BALL_RADIUS &&
-            -2.0f * BALL_RADIUS < pos.y && pos.y < GAME_HEIGHT + 2.0f * BALL_RADIUS) {
-                for (auto& line : lines) {
-                    const int size = line.pos.size();
-                    for (int i = 0; i < size; ++i)
+            -2.0f * BALL_RADIUS < pos.y && pos.y < GAME_HEIGHT + 2.0f * BALL_RADIUS)
+                for (auto& line : lines)
+                    for (int i = 0; i < line.pos.size(); ++i)
                         if (glm::distance(pos, line.pos[i]) < proj_radius[proj.type] + BALL_RADIUS)
                             collide(proj, line, i);
-                }
-            }
     }
 }
 
