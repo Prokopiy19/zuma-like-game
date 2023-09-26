@@ -17,7 +17,7 @@ void reset_balls_ids();
 
 class LineSimulation {
 public:
-    LineSimulation(Path path) : path(path) { }
+    LineSimulation(const Path& path);
     
     void update(float delta);
     

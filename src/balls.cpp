@@ -15,6 +15,19 @@ BallID id = 0;
 
 }//namespace
 
+LineSimulation::LineSimulation(const Path& path) : path(path)
+{
+    ids.reserve(ESTIMATED_MAX_BALLS);
+    ts.reserve(ESTIMATED_MAX_BALLS);
+    colors.reserve(ESTIMATED_MAX_BALLS);
+    pos.reserve(ESTIMATED_MAX_BALLS);
+    alive.reserve(ESTIMATED_MAX_BALLS);
+    seg.reserve(ESTIMATED_MAX_BALLS);
+
+    cnt_segments.reserve(ESTIMATED_MAX_SEGMENTS);
+    segments.reserve(ESTIMATED_MAX_SEGMENTS);
+}
+
 void reset_balls_ids()
 {
     id = 0;

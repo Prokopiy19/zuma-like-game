@@ -9,6 +9,11 @@
 
 GameState state;
 
+GameState::GameState()
+{
+    projectiles.reserve(30);
+}
+
 void GameState::update(const float delta)
 {
     for (auto& line : lines) {

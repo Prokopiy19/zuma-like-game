@@ -10,6 +10,8 @@
 #include "projectile.h"
 
 struct GameState {
+    GameState();
+
     void update(float delta);
     void move_projectiles(float delta);
     void find_collisions();
