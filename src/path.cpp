@@ -1,7 +1,6 @@
 #include "path.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include "glm/geometric.hpp"
 

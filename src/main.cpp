@@ -1,10 +1,8 @@
 #include <algorithm>
-#include <random>
 #include <vector>
 
 #include <SDL.h>
 
-#include "balls.h"
 #include "cursor.h"
 #include "debug.h"
 #include "game.h"
