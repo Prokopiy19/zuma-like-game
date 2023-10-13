@@ -33,6 +33,12 @@ add_executable(trgame ${SRCS})
 
 set_property(TARGET trgame PROPERTY CXX_STANDARD 20)
 
+if(MSVC)
+  target_compile_options(trgame PRIVATE /W4 /WX)
+else()
+  target_compile_options(trgame PRIVATE -Wall -Wextra -Wpedantic -Wno-sign-compare -Wno-unused-parameter)
+endif()
+
 # SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications
 if(TARGET SDL2::SDL2main)
     # It has an implicit dependency on SDL2 functions, so it MUST be added before SDL2::SDL2 (or SDL2::SDL2-static)
