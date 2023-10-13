@@ -45,7 +45,7 @@ glm::vec2 Path::operator()(const float t) const
     x = std::max(x, 0.0f);
     int i = static_cast<int>(x);
     float r = x - i;
-    if (i >= p.size() - 1)
+    if (i + 1 >= p.size())
         return p.back();
     else
         return (1.0f-r)*p[i] + r*p[i+1];
@@ -56,7 +56,7 @@ glm::vec2 Path::tangent(const float t) const
     float x = t / h;
     x = std::max(x, 0.0f);
     int i = static_cast<int>(x);
-    if (i >= p.size() - 1)
+    if (i + 1 >= p.size())
         return glm::vec2(0.0f, 0.0f);
     else
         return p[i+1] - p[i];
