@@ -1,5 +1,5 @@
 #include "game_rect.h"
-#include "balls.h"
+#include "settings.h"
 
 SDL_FRect render_frect;
 float render_ball_r;

@@ -1,14 +1,12 @@
 #ifndef BALLS_H
 #define BALLS_H
 
-#include <random>
 #include <vector>
 
 #include "glm/vec2.hpp"
 
 #include "segment.h"
 #include "colors.h"
-#include "settings.h"
 #include "path.h"
 
 using BallID = int;
@@ -21,23 +19,23 @@ public:
     
     void update(float delta);
     
-    glm::vec2 get_pos(int i) const { return path(ts[i]); }
+    glm::vec2 get_pos(int i) const { return path(balls[i].t); }
 
-    // SOA
-    std::vector<BallID> ids;
-    std::vector<float> ts;
-    std::vector<Color> colors;
-    std::vector<glm::vec2> pos;
-    std::vector<bool> alive;
-    std::vector<SEG_ID> seg;
-    // SOA
-
+    struct Ball {
+        BallID id;
+        float t = 0.0f;
+        Color color;
+        glm::vec2 pos;
+        bool alive = true;
+        SEG_ID sid;
+    };
+    std::vector<Ball> balls;
     void calc_pos();
     void kill_balls();
     void divide_segments();
     Path path;
     std::vector<Segment> segments;
-    void collide_w_ball(int i, const glm::vec2 pos, Color color);
+    void collide_w_ball(int i, glm::vec2 pos, Color color);
 private:    
     void collide();
     void spawn();

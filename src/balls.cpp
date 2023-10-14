@@ -1,7 +1,6 @@
 #include "balls.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include "glm/geometric.hpp"
 
@@ -17,12 +16,7 @@ BallID id = 0;
 
 LineSimulation::LineSimulation(const Path& path) : path(path)
 {
-    ids.reserve(ESTIMATED_MAX_BALLS);
-    ts.reserve(ESTIMATED_MAX_BALLS);
-    colors.reserve(ESTIMATED_MAX_BALLS);
-    pos.reserve(ESTIMATED_MAX_BALLS);
-    alive.reserve(ESTIMATED_MAX_BALLS);
-    seg.reserve(ESTIMATED_MAX_BALLS);
+    balls.reserve(ESTIMATED_MAX_BALLS);
 
     cnt_segments.reserve(ESTIMATED_MAX_SEGMENTS);
     segments.reserve(ESTIMATED_MAX_SEGMENTS);
@@ -37,7 +31,7 @@ void LineSimulation::update(const float delta)
 {
     spawn();
 
-    if (ids.empty())
+    if (balls.empty())
         return;
     divide_segments();
     remove_unused_segments();
@@ -50,59 +44,57 @@ void LineSimulation::update(const float delta)
     move_segments(delta);
     accelerate_segments(delta/2);
 
-    if (!ts.empty() && ts.front() >= path.dest) {
-        get_seg(seg.back()).vel = SPAWN_SPEED;
+    if (!balls.empty() && balls.front().t >= path.dest) {
+        get_seg(balls.back().sid).vel = SPAWN_SPEED;
     }
 }
 
 void LineSimulation::calc_pos()
 {
-    pos.resize(ids.size());
-    for (int i = 0; i < ids.size(); ++i)
-        pos[i] = path(ts[i]);
+    for (int i = 0; i < balls.size(); ++i)
+        balls[i].pos = get_pos(i);
 }
 
 void LineSimulation::spawn()
 {
-    if (state.cnt > 0 && (ts.empty() || (ts.back() > BALL_RADIUS))) {
-        Color color = static_cast<Color>(state.u(state.e));
-        ids.push_back(id++);
-        alive.push_back(true);
-        colors.push_back(color);
-        if (ts.empty() || ts.back() > 2.0f * BALL_RADIUS) {
-            float vel = (ts.empty()) ? SPAWN_SPEED : BALL_ACCEL / FRICTION;
-            ts.push_back(0);
-            seg.push_back(new_seg(vel));
+    if (state.cnt > 0 && (balls.empty() || (balls.back().t > BALL_RADIUS))) {
+        Ball ball;
+        ball.id = id++;
+        ball.color = static_cast<Color>(state.u(state.e));
+        if (balls.empty() || balls.back().t > 2.0f * BALL_RADIUS) {
+            float vel = (balls.empty()) ? SPAWN_SPEED : BALL_ACCEL / FRICTION;
+            ball.t = 0.0f;
+            ball.sid = new_seg(vel);
         }
         else {
-            ts.push_back(ts.back() - 2.0f * BALL_RADIUS);
-            auto s = seg.back();
-            seg.push_back(s);
+            ball.t = balls.back().t - 2.0f * BALL_RADIUS;
+            ball.sid = balls.back().sid;
         }
+        balls.emplace_back(ball);
         --state.cnt;
     }
 }
 
 void LineSimulation::collide()
 {
-    for (int i = seg.size()-2; i >= 0; --i)
-        if (seg[i] != seg[i+1] && std::fabs(ts[i] - ts[i+1]) < 2.0f * BALL_RADIUS) {
-            auto& segment0 = get_seg(seg[i]);
-            auto& segment1 = get_seg(seg[i+1]);
+    for (int i = int(balls.size())-2; i >= 0; --i)
+        if (balls[i].sid != balls[i+1].sid && std::fabs(balls[i].t - balls[i+1].t) < 2.0f * BALL_RADIUS) {
+            auto& segment0 = get_seg(balls[i].sid);
+            auto& segment1 = get_seg(balls[i+1].sid);
             float new_vel = segment0.vel + segment1.vel;
-            if (colors[i] == colors[i+1]) {
+            if (balls[i].color == balls[i+1].color) {
                 int cnt = match_colors(i, -1, false) +
                           match_colors(i+1, 1, false);
-                if (cnt >= 3 || !alive[i] || !alive[i+1]) {
+                if (cnt >= 3 || !balls[i].alive || !balls[i+1].alive) {
                     match_colors(i, -1, true);
                     match_colors(i+1, 1, true);
                     segment1.vel = new_vel;
                     continue;
                 }
             }
-            remove_seg(seg[i]);
-            replace_seg(i, seg[i], seg[i+1], -1);
-            get_seg(seg[i+1]).vel = new_vel;
+            remove_seg(balls[i].sid);
+            replace_seg(i, balls[i].sid, balls[i+1].sid, -1);
+            get_seg(balls[i+1].sid).vel = new_vel;
         }
 }
 
@@ -133,9 +125,9 @@ void LineSimulation::replace_seg(const int i, const SEG_ID from, const SEG_ID to
         step = 1;
     else
         step = -1;
-    for (int j = i; 0 <= j && j < seg.size(); j += step)
-        if (seg[j] == from)
-            seg[j] = to;
+    for (int j = i; 0 <= j && j < balls.size(); j += step)
+        if (balls[j].sid == from)
+            balls[j].sid = to;
         else
             break;
 }
@@ -144,53 +136,43 @@ void LineSimulation::move_segments(const float delta)
 {
     SEG_ID curr_seg = -1;
     float curr_vel = 0.0;
-    for (int i = seg.size() - 1; i >= 0; --i) {
-        if (seg[i] == curr_seg) {
-            ts[i] = ts[i + 1] + 2.0f * BALL_RADIUS;
+    for (int i = balls.size() - 1; i >= 0; --i) {
+        if (balls[i].sid == curr_seg) {
+            balls[i].t = balls[i + 1].t + 2.0f * BALL_RADIUS;
         }
         else {
-            curr_seg = seg[i];
-            curr_vel = get_seg(seg[i]).vel;
-            ts[i] += curr_vel * delta;
+            curr_seg = balls[i].sid;
+            curr_vel = get_seg(balls[i].sid).vel;
+            balls[i].t += curr_vel * delta;
         }
     }
 }
 
 void LineSimulation::divide_segments()
 {
-    for (int i = ts.size() - 2; i >= 0; --i)
-        if (std::fabs(ts[i] - ts[i+1]) > 2.0f * BALL_RADIUS + EPS &&
-                seg[i] == seg[i+1]) {
-            replace_seg(i, seg[i], new_seg(0.0f), -1);
+    for (int i = balls.size() - 2; i >= 0; --i)
+        if (std::fabs(balls[i].t - balls[i+1].t) > 2.0f * BALL_RADIUS + EPS &&
+                balls[i].sid == balls[i+1].sid) {
+            replace_seg(i, balls[i].sid, new_seg(0.0f), -1);
         }
 }
 
 void LineSimulation::kill_balls()
 {
     int j = 0;
-    for(int i = 0; i < alive.size(); ++i)
-        if (alive[i]) {
-            ids[j] = ids[i];
-            colors[j] = colors[i];
-            ts[j] = ts[i];
-            seg[j] = seg[i];
-            pos[j] = pos[i];
+    for(int i = 0; i < balls.size(); ++i)
+        if (balls[i].alive) {
+            balls[j] = balls[i];
             ++j;
         }
-    ids.resize(j);
-    colors.resize(j);
-    ts.resize(j);
-    seg.resize(j);
-    pos.resize(j);
-    alive.clear();
-    alive.assign(j, true);
+    balls.resize(j);
 }
 
 void LineSimulation::remove_unused_segments()
 {
     cnt_segments.assign(segments.size(), 0);
-    for (auto id : seg) {
-        int i = &get_seg(id) - segments.data();
+    for (const auto& ball : balls) {
+        const int i = &get_seg(ball.sid) - segments.data();
         ++cnt_segments[i];
     }
     int j = 0;
@@ -206,10 +188,10 @@ int LineSimulation::match_colors(const int i, int step, const bool destroy)
     int cnt = 0;
     step = std::min(step, 1);
     step = std::max(step, -1);
-    for (int j = i; 0 <= j && j < colors.size(); j += step)
-        if (seg[j] == seg[i] && colors[j] == colors[i]) {
+    for (int j = i; 0 <= j && j < balls.size(); j += step)
+        if (balls[j].sid == balls[i].sid && balls[j].color == balls[i].color) {
             ++cnt;
-            alive[j] = alive[j] && !destroy;
+            balls[j].alive = balls[j].alive && !destroy;
         }
         else
             break;
@@ -218,43 +200,45 @@ int LineSimulation::match_colors(const int i, int step, const bool destroy)
 
 void LineSimulation::accelerate_segments(const float delta)
 {
-    if (ids.empty())
+    if (balls.empty())
         return;
-    get_seg(seg.back()).vel += BALL_ACCEL * delta;
+    get_seg(balls.back().sid).vel += BALL_ACCEL * delta;
     
-    for (int i = seg.size() - 2; i >= 0; --i)
-        if (seg[i] != seg[i+1])
-            if(colors[i] == colors[i+1])
-                get_seg(seg[i]).vel -= BACK_ACCEL * delta;
+    for (int i = int(balls.size()) - 2; i >= 0; --i)
+        if (balls[i].sid != balls[i+1].sid)
+            if(balls[i].color == balls[i+1].color)
+                get_seg(balls[i].sid).vel -= BACK_ACCEL * delta;
     for (auto& segment : segments) {
         segment.vel -= segment.vel * FRICTION * delta;
     }
-    if (ts.front() < 0)
-        get_seg(seg.back()).vel = SPAWN_SPEED;
+    if (balls.front().t < 0)
+        get_seg(balls.back().sid).vel = SPAWN_SPEED;
 }
 
 void LineSimulation::collide_w_ball(const int i, const glm::vec2 proj_pos, const Color color)
 {
-    auto tangent = path.tangent(ts[i]);
-    auto vec = proj_pos - pos[i];
+    auto tangent = path.tangent(balls[i].t);
+    auto vec = proj_pos - balls[i].pos;
     auto cosp = glm::dot(tangent, vec) / glm::length(tangent) / glm::length(vec);
     auto sid = new_seg(0.0f);
     if (cosp >= 0) {
-        insert_ball(i, ts[i] + 2.0f * BALL_RADIUS - 2.0f * EPS, new_seg(0.0f), color);
-        replace_seg(i-1, seg[i+1], sid, -1);
+        insert_ball(i, balls[i].t + 2.0f * BALL_RADIUS - 2.0f * EPS, new_seg(0.0f), color);
+        replace_seg(i-1, balls[i+1].sid, sid, -1);
     }
     else {
-        insert_ball(i+1, ts[i] - 2.0f * BALL_RADIUS + 2.0f * EPS, new_seg(0.0f), color);
-        replace_seg(i, seg[i], sid, -1);
+        insert_ball(i+1, balls[i].t - 2.0f * BALL_RADIUS + 2.0f * EPS, new_seg(0.0f), color);
+        replace_seg(i, balls[i].sid, sid, -1);
     }
 }
 
 void LineSimulation::insert_ball(const int i, const float t, const SEG_ID sid, const Color color)
 {
-    ids.insert(ids.begin() + i, id++);
-    ts.insert(ts.begin() + i, t);
-    colors.insert(colors.begin() + i, color);
-    pos.insert(pos.begin() + i, path(t));
-    alive.insert(alive.begin() + i, true);
-    seg.insert(seg.begin() + i, sid);
+    Ball ball;
+    ball.id = id++;
+    ball.t = t;
+    ball.color = color;
+    ball.pos = path(t);
+    ball.alive = true;
+    ball.sid = sid;
+    balls.emplace(balls.begin() + i, ball);
 }

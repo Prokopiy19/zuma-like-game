@@ -8,6 +8,7 @@
 #include "game.h"
 #include "input.h"
 #include "render.h"
+#include "settings.h"
 #include "shooter.h"
 #include "spline.h"
 #include "window.h"

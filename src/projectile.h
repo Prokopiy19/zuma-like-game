@@ -6,7 +6,7 @@
 #include <array>
 
 #include "colors.h"
-#include "balls.h"
+#include "settings.h"
 
 #define X_PROJECTILE_TYPES \
         X(PROJ_MISSILE, 0.5) \

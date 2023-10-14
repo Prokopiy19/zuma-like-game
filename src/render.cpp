@@ -1,20 +1,17 @@
 #include "render.h"
 
-#define _USE_MATH_DEFINES
-#include <cmath>
+#include <numbers>
 #include <string>
 #include <vector>
 
-#include "glm/geometric.hpp"
-#include "glm/trigonometric.hpp"
+#include <glm/geometric.hpp>
+#include <glm/trigonometric.hpp>
+#include <SDL_image.h>
 
 #include "colors.h"
+#include "settings.h"
 #include "game_rect.h"
 #include "window.h"
-
-#ifndef M_PI
-constexpr float M_PI = 3.141592653589793238f;
-#endif//M_PI
 
 SDL_Renderer* ptr_renderer = nullptr;
 
@@ -141,8 +138,8 @@ void draw_shooter()
     const auto direction = glm::normalize(mouse_pos - shooter.pos);
     float angle = glm::acos(direction.x);
     if (direction.y < 0)
-        angle = 2.0f * M_PI - angle;
-    const float degrees = 180.0f * angle / M_PI;
+        angle = 2.0f * std::numbers::pi_v<float> - angle;
+    const float degrees = 180.0f * angle / std::numbers::pi_v<float>;
     SDL_RenderCopyExF(
         ptr_renderer, 
         m.missile, 
@@ -176,8 +173,8 @@ void prepare_scene()
 
     SDL_RenderCopyF(ptr_renderer, m.path, nullptr, &render_frect);
     for (const auto& line : state.lines)
-        for (int i = 0; i < line.pos.size(); ++i)
-            draw_ball(line.pos[i].x, line.pos[i].y, line.colors[i]);
+        for (int i = 0; i < line.balls.size(); ++i)
+            draw_ball(line.balls[i].pos.x, line.balls[i].pos.y, line.balls[i].color);
 
     for (const auto& proj : state.projectiles)
         draw_circle(proj.pos.x, proj.pos.y, sx(proj_radius[proj.type]), proj.color);

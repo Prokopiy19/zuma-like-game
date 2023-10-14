@@ -1,11 +1,9 @@
 #include "game.h"
 
-#include <algorithm>
-
 #include <glm/geometric.hpp>
 
-#include "colors.h"
 #include "game_rect.h"
+#include "settings.h"
 
 GameState state;
 
@@ -45,8 +43,8 @@ void GameState::find_collisions()
         if (-2.0f * BALL_RADIUS < pos.x && pos.x < GAME_WIDTH + 2.0f * BALL_RADIUS &&
             -2.0f * BALL_RADIUS < pos.y && pos.y < GAME_HEIGHT + 2.0f * BALL_RADIUS)
                 for (auto& line : lines)
-                    for (int i = 0; i < line.pos.size(); ++i)
-                        if (glm::distance(pos, line.pos[i]) < proj_radius[proj.type] + BALL_RADIUS)
+                    for (int i = 0; i < line.balls.size(); ++i)
+                        if (glm::distance(pos, line.balls[i].pos) < proj_radius[proj.type] + BALL_RADIUS)
                             collide(proj, line, i);
     }
 }
@@ -61,7 +59,7 @@ void GameState::collide(Projectile& proj, LineSimulation& line, const int i)
         }
         case PROJ_MISSILE: {
             proj.type = PROJ_DEAD;
-            line.alive[i] = false;
+            line.balls[i].alive = false;
             break;
         }
         case PROJ_DEAD: case PROJ_TOTAL: {

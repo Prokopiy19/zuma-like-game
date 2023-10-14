@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <chrono>
+#include <random>
 #include <vector>
 
 #include "balls.h"
