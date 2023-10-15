@@ -11,8 +11,6 @@
 
 using BallID = int;
 
-void reset_balls_ids();
-
 class LineSimulation {
 public:
     LineSimulation(const Path& path);

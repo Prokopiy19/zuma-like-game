@@ -21,6 +21,7 @@ struct GameState {
 
     Timer timer;
     int cnt = 500; // balls not spawned yet
+    BallID ball_id = 0;
     
     std::vector<LineSimulation> lines;
     

@@ -8,23 +8,12 @@
 #include "game.h"
 #include "settings.h"
 
-namespace {
-
-BallID id = 0;
-
-}//namespace
-
 LineSimulation::LineSimulation(const Path& path) : path(path)
 {
     balls.reserve(ESTIMATED_MAX_BALLS);
 
     cnt_segments.reserve(ESTIMATED_MAX_SEGMENTS);
     segments.reserve(ESTIMATED_MAX_SEGMENTS);
-}
-
-void reset_balls_ids()
-{
-    id = 0;
 }
 
 void LineSimulation::update(const float delta)
@@ -59,7 +48,7 @@ void LineSimulation::spawn()
 {
     if (state.cnt > 0 && (balls.empty() || (balls.back().t > BALL_RADIUS))) {
         Ball ball;
-        ball.id = id++;
+        ball.id = state.ball_id++;
         ball.color = static_cast<Color>(state.u(state.e));
         if (balls.empty() || balls.back().t > 2.0f * BALL_RADIUS) {
             float vel = (balls.empty()) ? SPAWN_SPEED : BALL_ACCEL / FRICTION;
@@ -234,7 +223,7 @@ void LineSimulation::collide_w_ball(const int i, const glm::vec2 proj_pos, const
 void LineSimulation::insert_ball(const int i, const float t, const SEG_ID sid, const Color color)
 {
     Ball ball;
-    ball.id = id++;
+    ball.id = state.ball_id++;
     ball.t = t;
     ball.color = color;
     ball.pos = path(t);
