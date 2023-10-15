@@ -137,9 +137,10 @@ void draw_shooter()
     const glm::vec2 mouse_pos(xx(x), yy(y));
     const auto direction = glm::normalize(mouse_pos - shooter.pos);
     float angle = glm::acos(direction.x);
+    constexpr float pi = std::numbers::pi_v<float>;
     if (direction.y < 0)
-        angle = 2.0f * std::numbers::pi_v<float> - angle;
-    const float degrees = 180.0f * angle / std::numbers::pi_v<float>;
+        angle = 2.0f * pi - angle;
+    const float degrees = 180.0f * angle / pi;
     SDL_RenderCopyExF(
         ptr_renderer, 
         m.missile, 
