@@ -5,7 +5,11 @@
     X(COLOR_RED, "red") \
     X(COLOR_GREEN, "green") \
     X(COLOR_BLUE, "blue") \
-    X(COLOR_YELLOW, "yellow")
+    X(COLOR_YELLOW, "yellow") \
+    X(COLOR_PURPLE, "purple") \
+    X(COLOR_WHITE, "white") \
+    X(COLOR_CYAN, "cyan") \
+    X(COLOR_BLACK, "black")
 
 enum Color {
     #define X(a, b) a,
