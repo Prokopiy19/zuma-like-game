@@ -1,10 +1,12 @@
 #ifndef RENDER_H
 #define RENDER_H
 
+#include <vector>
+
+#include <glm/vec2.hpp>
 #include <SDL.h>
 
-#include "balls.h"
-#include "game.h"
+#include "path.h"
 
 bool render_init();
 void render_close();

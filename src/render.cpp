@@ -9,6 +9,7 @@
 #include <SDL_image.h>
 
 #include "colors.h"
+#include "game.h"
 #include "settings.h"
 #include "game_rect.h"
 #include "window.h"

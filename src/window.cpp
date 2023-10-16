@@ -7,6 +7,7 @@
 #include <SDL_syswm.h>
 #include <SDL_ttf.h>
 
+#include "game.h"
 #include "render.h"
 
 #ifdef _WIN32
