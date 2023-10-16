@@ -101,24 +101,16 @@ void render_present()
 
 namespace {
 
-void draw_ball(float x, float y, Color color)
+// x y - center coordinates
+void render_texture(SDL_Texture* texture, float x, float y, float r)
 {
-    SDL_FRect rect;
-    rect.x = cx(x) - render_ball_r;
-    rect.y = cy(y) - render_ball_r;
-    rect.w = 2.0f * render_ball_r;
-    rect.h = 2.0f * render_ball_r;
-    SDL_RenderCopyF(ptr_renderer, m.colors[color], nullptr, &rect);
-}
-
-void draw_circle(float x, float y, float r, Color color)
-{
-    SDL_FRect rect;
-    rect.x = cx(x) - r;
-    rect.y = cy(y) - r;
-    rect.w = 2.0f * r;
-    rect.h = 2.0f * r;
-    SDL_RenderCopyF(ptr_renderer, m.colors[color], nullptr, &rect);
+    const SDL_Rect rect = {
+        .x = int(cx(x) - sx(r)),
+        .y = int(cy(y) - sx(r)),
+        .w = int(sx(2 * r)),
+        .h = int(sx(2 * r)),
+    };
+    SDL_RenderCopy(ptr_renderer, texture, nullptr, &rect);
 }
 
 void draw_shooter()
@@ -176,10 +168,10 @@ void prepare_scene()
     SDL_RenderCopyF(ptr_renderer, m.path, nullptr, &render_frect);
     for (const auto& line : state.lines)
         for (int i = 0; i < line.balls.size(); ++i)
-            draw_ball(line.balls[i].pos.x, line.balls[i].pos.y, line.balls[i].color);
+            render_texture(m.colors[line.balls[i].color], line.balls[i].pos.x, line.balls[i].pos.y, BALL_RADIUS);
 
     for (const auto& proj : state.projectiles)
-        draw_circle(proj.pos.x, proj.pos.y, sx(proj_radius[proj.type]), proj.color);
+        render_texture(m.colors[proj.color], proj.pos.x, proj.pos.y, proj_radius[proj.type]);
 
     draw_shooter();
 }
@@ -193,10 +185,10 @@ void draw_path(const std::vector<glm::vec2>& control_points, const Path& path)
     SDL_SetRenderDrawColor(ptr_renderer, 192, 192, 192, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ptr_renderer);
     for (auto p : path.p) {
-        draw_circle(p.x, p.y, 1.5f, COLOR_BLUE);
+        render_texture(m.colors[COLOR_BLUE], p.x, p.y, 0.1f);
     }
     for (auto p : control_points)
-        draw_circle(p.x, p.y, 3.0f, COLOR_RED);
+        render_texture(m.colors[COLOR_RED], p.x, p.y, 0.2f);
     draw_exit(state.lines[0]);
     SDL_SetRenderTarget(ptr_renderer, nullptr);
 }

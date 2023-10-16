@@ -124,11 +124,6 @@ bool window_init()
         return false;
     }
 
-    if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"))
-    {
-        SDL_Log("Warning: Linear texture scaling not enabled!\n");
-    }
-
     SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
     auto_window_size();
     window.ptr = SDL_CreateWindow(
