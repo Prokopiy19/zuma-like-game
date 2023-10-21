@@ -222,12 +222,13 @@ void LineSimulation::collide_w_ball(const int i, const glm::vec2 proj_pos, const
 
 void LineSimulation::insert_ball(const int i, const float t, const SEG_ID sid, const Color color)
 {
-    Ball ball;
-    ball.id = state.ball_id++;
-    ball.t = t;
-    ball.color = color;
-    ball.pos = path(t);
-    ball.alive = true;
-    ball.sid = sid;
+    Ball ball = {
+        .id = state.ball_id++,
+        .t = t,
+        .color = color,
+        .pos = path(t),
+        .alive = true,
+        .sid = sid,
+    };
     balls.emplace(balls.begin() + i, ball);
 }
