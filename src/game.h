@@ -31,6 +31,10 @@ struct GameState {
 
     std::default_random_engine e = std::default_random_engine(std::chrono::high_resolution_clock::now().time_since_epoch().count());
     std::uniform_int_distribution<> u = std::uniform_int_distribution<>(0, COLOR_TOTAL-1);
+
+    enum class State {
+        init, gameplay, game_over, waiting
+    } state = State::gameplay;
 };
 extern GameState state;
 

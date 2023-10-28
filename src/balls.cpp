@@ -33,7 +33,10 @@ void LineSimulation::update(const float delta)
     move_segments(delta);
     accelerate_segments(delta/2);
 
-    if (!balls.empty() && balls.front().t >= path.dest) {
+    if (state.state == GameState::State::gameplay && !balls.empty() && balls.front().t >= path.dest) {
+        state.state = GameState::State::game_over;
+    }
+    if (state.state == GameState::State::game_over) {
         get_seg(balls.back().sid).vel = SPAWN_SPEED;
     }
 }
@@ -46,6 +49,9 @@ void LineSimulation::calc_pos()
 
 void LineSimulation::spawn()
 {
+    if (state.state != GameState::State::gameplay) {
+        return;
+    }
     if (state.cnt > 0 && (balls.empty() || (balls.back().t > BALL_RADIUS))) {
         Ball ball;
         ball.id = state.ball_id++;
