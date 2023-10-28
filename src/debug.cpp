@@ -1,7 +1,5 @@
 #include "debug.h"
 
-#include <algorithm>
-#include <string>
 #include <sstream>
 
 #include <SDL.h>
