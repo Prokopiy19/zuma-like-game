@@ -21,7 +21,7 @@ void close()
 }
 
 constexpr int FPS_CAP = 121;
-float MAX_DELTA = 1000.0f / FPS_CAP;
+constexpr float MAX_DELTA = 1000.0f / FPS_CAP;
 void cap_framerate()
 {
     static Timer timer;
