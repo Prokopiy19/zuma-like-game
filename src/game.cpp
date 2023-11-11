@@ -1,5 +1,7 @@
 #include "game.h"
 
+#include <vector>
+
 #include <glm/geometric.hpp>
 
 #include "game_rect.h"
