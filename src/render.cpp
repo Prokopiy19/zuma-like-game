@@ -18,13 +18,11 @@ SDL_Renderer* ptr_renderer = nullptr;
 
 namespace {
 //resources
-struct {
-    std::vector<SDL_Texture*> destroy_list;
-    std::array<SDL_Texture*, COLOR_TOTAL> colors;
-    SDL_Texture* missile = nullptr;
-    SDL_Texture* path = nullptr;
-    SDL_Texture* exit = nullptr;
-} m;
+std::vector<SDL_Texture*> destroy_list;
+std::array<SDL_Texture*, COLOR_TOTAL> color_textures;
+SDL_Texture* missile_texture = nullptr;
+SDL_Texture* path_texture = nullptr;
+SDL_Texture* exit_texture = nullptr;
 
 bool load_texture_from_file(SDL_Texture *&ptr_texture, const std::string& path)
 {
@@ -39,27 +37,27 @@ bool load_texture_from_file(SDL_Texture *&ptr_texture, const std::string& path)
     if(!ptr_texture)
         SDL_Log("SDL_CreateTextureFromSurface failed %s: %s\n", path.c_str(), SDL_GetError());
     SDL_FreeSurface(surface);
-    m.destroy_list.push_back(ptr_texture);
+    destroy_list.push_back(ptr_texture);
 	return ptr_texture;
 }
 
 bool load_media()
 {
-    #define X(a, b) load_texture_from_file(m.colors[a], std::string("data/ball_") + b + std::string(".png"));
+    #define X(a, b) load_texture_from_file(color_textures[a], std::string("data/ball_") + b + std::string(".png"));
         X_COLOR_TEXTURES
     #undef X
 
-    load_texture_from_file(m.exit, "data/exit.png");
-    load_texture_from_file(m.missile, "data/missile.png");
+    load_texture_from_file(exit_texture, "data/exit.png");
+    load_texture_from_file(missile_texture, "data/missile.png");
 
     return true;
 }
 
 void free_media()
 {
-    for (auto texture : m.destroy_list)
+    for (auto texture : destroy_list)
         SDL_DestroyTexture(texture);
-    m.destroy_list.clear();
+    destroy_list.clear();
 }
 
 } // namespace
@@ -97,11 +95,8 @@ void render_present()
 //////////////////////////////////////////////
 //////////////////////////////////////////////
 
-//64x36 field game coordinate system
-
 namespace {
 
-// x y - center coordinates
 void render_texture(SDL_Texture* texture, float x, float y, float r)
 {
     const SDL_Rect rect = {
@@ -136,7 +131,7 @@ void draw_shooter()
     const float degrees = 180.0f * angle / pi;
     SDL_RenderCopyExF(
         ptr_renderer, 
-        m.missile, 
+        missile_texture, 
         nullptr, 
         &frect, 
         degrees, 
@@ -154,7 +149,7 @@ void draw_exit(const LineSimulation& line)
     frect.y = cy(dest.y) - r;
     frect.w = 2.0f * r;
     frect.h = 2.0f * r;
-    SDL_RenderCopyF(ptr_renderer, m.exit, nullptr, &frect);
+    SDL_RenderCopyF(ptr_renderer, exit_texture, nullptr, &frect);
 }
 
 } // namespace
@@ -165,30 +160,30 @@ void prepare_scene()
     SDL_SetRenderDrawColor(ptr_renderer, 192, 192, 192, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ptr_renderer);
 
-    SDL_RenderCopyF(ptr_renderer, m.path, nullptr, &render_frect);
+    SDL_RenderCopyF(ptr_renderer, path_texture, nullptr, &render_frect);
     for (const auto& line : state.lines)
         for (int i = 0; i < line.balls.size(); ++i)
-            render_texture(m.colors[line.balls[i].color], line.balls[i].pos.x, line.balls[i].pos.y, BALL_RADIUS);
+            render_texture(color_textures[line.balls[i].color], line.balls[i].pos.x, line.balls[i].pos.y, BALL_RADIUS);
 
     for (const auto& proj : state.projectiles)
-        render_texture(m.colors[proj.color], proj.pos.x, proj.pos.y, proj_radius[proj.type]);
+        render_texture(color_textures[proj.color], proj.pos.x, proj.pos.y, proj_radius[proj.type]);
 
     draw_shooter();
 }
 
 void draw_path(const std::vector<glm::vec2>& control_points, const Path& path)
 {
-    m.path = SDL_CreateTexture(ptr_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1920, 1080);
-    m.destroy_list.push_back(m.path);
-    SDL_SetRenderTarget(ptr_renderer, m.path);
+    path_texture = SDL_CreateTexture(ptr_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1920, 1080);
+    destroy_list.push_back(path_texture);
+    SDL_SetRenderTarget(ptr_renderer, path_texture);
     adjust_render_rect(1920, 1080);
     SDL_SetRenderDrawColor(ptr_renderer, 192, 192, 192, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ptr_renderer);
     for (auto p : path.p) {
-        render_texture(m.colors[COLOR_BLUE], p.x, p.y, 0.1f);
+        render_texture(color_textures[COLOR_BLUE], p.x, p.y, 0.1f);
     }
     for (auto p : control_points)
-        render_texture(m.colors[COLOR_RED], p.x, p.y, 0.2f);
+        render_texture(color_textures[COLOR_RED], p.x, p.y, 0.2f);
     draw_exit(state.lines[0]);
     SDL_SetRenderTarget(ptr_renderer, nullptr);
 }
