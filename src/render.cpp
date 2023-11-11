@@ -100,10 +100,10 @@ namespace {
 void render_texture(SDL_Texture* texture, float x, float y, float r)
 {
     const SDL_Rect rect = {
-        .x = int(cx(x) - sx(r)),
-        .y = int(cy(y) - sx(r)),
-        .w = int(sx(2 * r)),
-        .h = int(sx(2 * r)),
+        .x = int(screen_x(x) - scale_x(r)),
+        .y = int(screen_y(y) - scale_x(r)),
+        .w = int(scale_x(2 * r)),
+        .h = int(scale_x(2 * r)),
     };
     SDL_RenderCopy(ptr_renderer, texture, nullptr, &rect);
 }
@@ -113,16 +113,16 @@ void draw_shooter()
     if (state.shooters.empty())
         return;
     auto& shooter = state.shooters[0];
-    const float a = sx(SHOOTER_RADIUS);
+    const float a = scale_x(SHOOTER_RADIUS);
     SDL_FRect frect = {
-        .x = cx(shooter.pos.x) - 0.5f * a,
-        .y = cx(shooter.pos.y) - 0.5f * a, 
+        .x = screen_x(shooter.pos.x) - 0.5f * a,
+        .y = screen_x(shooter.pos.y) - 0.5f * a, 
         .w = a,
         .h = a,
     };
     int x, y;
     SDL_GetMouseState(&x, &y);
-    const glm::vec2 mouse_pos(xx(x), yy(y));
+    const glm::vec2 mouse_pos(game_x(x), game_y(y));
     const auto direction = glm::normalize(mouse_pos - shooter.pos);
     float angle = glm::acos(direction.x);
     constexpr float pi = std::numbers::pi_v<float>;
@@ -145,8 +145,8 @@ void draw_exit(const LineSimulation& line)
     SDL_FRect frect;
     auto dest = line.path(line.path.dest);
     float r = render_ball_r * 1.3f;
-    frect.x = cx(dest.x) - r;
-    frect.y = cy(dest.y) - r;
+    frect.x = screen_x(dest.x) - r;
+    frect.y = screen_y(dest.y) - r;
     frect.w = 2.0f * r;
     frect.h = 2.0f * r;
     SDL_RenderCopyF(ptr_renderer, exit_texture, nullptr, &frect);

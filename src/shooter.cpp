@@ -81,7 +81,7 @@ void Shooter::handle_events(SDL_Event& e)
     if (e.type == SDL_MOUSEBUTTONDOWN) {
         switch (e.button.button) {
             case SDL_BUTTON_LEFT: {
-                shoot(glm::vec2(xx(e.button.x), yy(e.button.y)));
+                shoot(glm::vec2(game_x(e.button.x), game_y(e.button.y)));
                 break;
             }
             case SDL_BUTTON_RIGHT: {

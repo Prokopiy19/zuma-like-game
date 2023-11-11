@@ -11,35 +11,35 @@ extern float render_ball_r;
 void adjust_render_rect(int w, int h);
 
 inline
-float cx(float x)
+float screen_x(float x)
 {
     return render_frect.x + render_frect.w * x / GAME_WIDTH;
 }
 inline
-float cy(float y)
+float screen_y(float y)
 {
     return render_frect.y + render_frect.h * y / GAME_HEIGHT;
 }
 
 inline
-float sx(float x)
+float scale_x(float x)
 {
     return render_frect.w * x / GAME_WIDTH;
 }
 inline
-float sy(float y)
+float scale_y(float y)
 {
     return render_frect.h * y / GAME_HEIGHT;
 }
 
 inline
-float xx(float x)
+float game_x(float x)
 {
     return (x - render_frect.x) * GAME_WIDTH / render_frect.w;
 }
 
 inline
-float yy(float y)
+float game_y(float y)
 {
     return (y - render_frect.y) * GAME_HEIGHT / render_frect.h;
 }
