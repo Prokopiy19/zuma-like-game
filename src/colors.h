@@ -15,7 +15,9 @@ enum Color {
     #define X(a, b) a,
         X_COLOR_TEXTURES
     #undef X
-    COLOR_TOTAL, COLOR_NONE
 };
+#define X(a, b) +1
+constexpr int COLOR_TOTAL = X_COLOR_TEXTURES;
+#undef X
 
 #endif // COLORS_H

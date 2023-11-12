@@ -16,9 +16,11 @@ enum ProjectileType {
     #define X(a, b) a,
         X_PROJECTILE_TYPES
     #undef X
-    PROJ_TOTAL,
     PROJ_DEAD,
 };
+#define X(a, b) +1
+constexpr int PROJ_TOTAL = X_PROJECTILE_TYPES;
+#undef X
 
 extern std::array<float, PROJ_TOTAL> proj_radius;
 

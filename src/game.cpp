@@ -65,7 +65,7 @@ void GameState::collide(Projectile& proj, LineSimulation& line, const int i)
             line.balls[i].alive = false;
             break;
         }
-        case PROJ_DEAD: case PROJ_TOTAL: {
+        case PROJ_DEAD: {
             break; // do nothing
         }
     }

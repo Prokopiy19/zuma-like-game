@@ -63,7 +63,7 @@ void Shooter::shoot(glm::vec2 target)
         }
         case SHOOTER_MISSILE: {
             const float vel = 60.0f;
-            shoot_proj(target, vel, PROJ_MISSILE, COLOR_NONE);
+            shoot_proj(target, vel, PROJ_MISSILE, COLOR_RED);
             break;
         }
         case SHOOTER_TOTAL: {
