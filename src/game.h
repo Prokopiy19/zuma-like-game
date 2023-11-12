@@ -20,7 +20,7 @@ struct GameState {
     void collide(Projectile& proj, LineSimulation& line, int ball_id);
 
     Timer timer;
-    int cnt = 500; // balls not spawned yet
+    int cnt = 100; // balls not spawned yet
     BallID ball_id = 0;
     
     std::vector<LineSimulation> lines;
