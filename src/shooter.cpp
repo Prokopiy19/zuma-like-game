@@ -124,5 +124,5 @@ void Shooter::swap_color()
 
 void Shooter::random_color()
 {
-    reserve = static_cast<Color>(state.u(state.e));
+    reserve = state.random_color();
 }

@@ -1,11 +1,10 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <chrono>
-#include <random>
 #include <vector>
 
 #include "balls.h"
+#include "random_color.h"
 #include "shooter.h"
 #include "timer.h"
 #include "projectile.h"
@@ -29,8 +28,7 @@ struct GameState {
 
     std::vector<Projectile> projectiles;
 
-    std::default_random_engine e = std::default_random_engine(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-    std::uniform_int_distribution<> u = std::uniform_int_distribution<>(0, COLOR_TOTAL-1);
+    RandomColor random_color;
 
     enum class State {
         init, gameplay, game_over, waiting

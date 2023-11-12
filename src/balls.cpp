@@ -56,7 +56,7 @@ void LineSimulation::spawn()
     if (state.cnt > 0 && (balls.empty() || (balls.back().t > BALL_RADIUS))) {
         Ball ball;
         ball.id = state.ball_id++;
-        ball.color = static_cast<Color>(state.u(state.e));
+        ball.color = state.random_color();
         if (balls.empty() || balls.back().t > 2.0f * BALL_RADIUS) {
             float vel = (balls.empty()) ? SPAWN_SPEED : BALL_ACCEL / FRICTION;
             ball.t = 0.0f;
