@@ -19,14 +19,14 @@ void GameState::update(const float delta)
     for (auto& line : lines) {
         line.update(delta);
     }
-    for (auto& shooter : shooters)
+    for (auto& shooter : shooters) {
         shooter.update(delta);
+    }
     
     move_projectiles(delta);
     find_collisions();
     projectiles_gone();
-    std::erase_if(projectiles, 
-                  [](Projectile proj) { return proj.type == PROJ_DEAD; });
+    std::erase_if(projectiles, [](Projectile proj) { return proj.type == PROJ_DEAD; });
     for (auto& line : lines) {
         line.kill_balls();
     }
@@ -34,8 +34,9 @@ void GameState::update(const float delta)
 
 void GameState::move_projectiles(const float delta)
 {
-    for (auto& proj : projectiles)
+    for (auto& proj : projectiles) {
         proj.pos += proj.vel * delta;
+    }
 }
 
 void GameState::find_collisions()
