@@ -117,15 +117,10 @@ SEG_ID LineSimulation::new_seg(const float vel)
 
 void LineSimulation::replace_seg(const int i, const SEG_ID from, const SEG_ID to, int step)
 {
-    if (step >= 0)
-        step = 1;
-    else
-        step = -1;
-    for (int j = i; 0 <= j && j < balls.size(); j += step)
-        if (balls[j].sid == from)
-            balls[j].sid = to;
-        else
-            break;
+    assert(step == -1 || step == 1);
+    for (int j = i; 0 <= j && j < balls.size() && balls[j].sid == from; j += step) {
+        balls[j].sid = to;
+    }
 }
 
 void LineSimulation::move_segments(const float delta)
