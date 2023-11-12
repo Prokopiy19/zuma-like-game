@@ -1,6 +1,7 @@
 #include "balls.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include "glm/geometric.hpp"
 
@@ -178,18 +179,16 @@ void LineSimulation::remove_unused_segments()
     cnt_segments.clear();
 }
 
-int LineSimulation::match_colors(const int i, int step, const bool destroy)
+int LineSimulation::match_colors(const int i, const int step, const bool destroy)
 {
+    assert(step == -1 || step == 1);
     int cnt = 0;
-    step = std::min(step, 1);
-    step = std::max(step, -1);
-    for (int j = i; 0 <= j && j < balls.size(); j += step)
-        if (balls[j].sid == balls[i].sid && balls[j].color == balls[i].color) {
-            ++cnt;
-            balls[j].alive = balls[j].alive && !destroy;
-        }
-        else
-            break;
+    const Color color = balls[i].color;
+    const SEG_ID sid = balls[i].sid;
+    for (int j = i; (0 <= j && j < balls.size()) && balls[j].sid == sid && balls[j].color == color; j += step) {
+        ++cnt;
+        balls[j].alive = balls[j].alive && !destroy;
+    }
     return cnt;
 }
 
