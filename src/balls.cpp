@@ -84,13 +84,14 @@ void LineSimulation::collide()
                 if (cnt >= 3 || !balls[i].alive || !balls[i+1].alive) {
                     match_colors(i, -1, true);
                     match_colors(i+1, 1, true);
-                    segment1.vel = new_vel;
+                    segment0.vel = 0.5 * new_vel;
+                    segment1.vel = 0.5 * new_vel;
                     continue;
                 }
             }
             remove_seg(balls[i].sid);
             replace_seg(i, balls[i].sid, balls[i+1].sid, -1);
-            get_seg(balls[i+1].sid).vel = new_vel;
+            get_seg(balls[i+1].sid).vel = 0.5 * new_vel;
         }
 }
 
@@ -144,7 +145,8 @@ void LineSimulation::divide_segments()
     for (int i = balls.size() - 2; i >= 0; --i)
         if (std::fabs(balls[i].t - balls[i+1].t) > 2.0f * BALL_RADIUS + EPS &&
                 balls[i].sid == balls[i+1].sid) {
-            replace_seg(i, balls[i].sid, new_seg(0.0f), -1);
+            const float vel = get_seg(balls[i].sid).vel;
+            replace_seg(i, balls[i].sid, new_seg(vel), -1);
         }
 }
 
@@ -209,13 +211,14 @@ void LineSimulation::collide_w_ball(const int i, const glm::vec2 proj_pos, const
     auto tangent = path.tangent(balls[i].t);
     auto vec = proj_pos - balls[i].pos;
     auto cosp = glm::dot(tangent, vec) / glm::length(tangent) / glm::length(vec);
-    auto sid = new_seg(0.0f);
+    float vel = get_seg(balls[i].sid).vel;
+    auto sid = new_seg(vel);
     if (cosp >= 0) {
-        insert_ball(i, balls[i].t + 2.0f * BALL_RADIUS - 2.0f * EPS, new_seg(0.0f), color);
+        insert_ball(i, balls[i].t + 2.0f * BALL_RADIUS - 2.0f * EPS, new_seg(vel), color);
         replace_seg(i-1, balls[i+1].sid, sid, -1);
     }
     else {
-        insert_ball(i+1, balls[i].t - 2.0f * BALL_RADIUS + 2.0f * EPS, new_seg(0.0f), color);
+        insert_ball(i+1, balls[i].t - 2.0f * BALL_RADIUS + 2.0f * EPS, new_seg(vel), color);
         replace_seg(i, balls[i].sid, sid, -1);
     }
 }
